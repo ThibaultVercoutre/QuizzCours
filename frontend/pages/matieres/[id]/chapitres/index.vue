@@ -128,7 +128,7 @@
   }
   
   const handleEditChapitre = (chapitre: Chapitre) => {
-    router.push(`/chapitres/${chapitre.id}/modifier`)
+    router.push(`/matieres/${matiereId}/chapitres/${chapitre.id}/modifier`)
   }
   
   const handleDeleteChapitre = async (chapitre: Chapitre) => {
@@ -146,7 +146,7 @@
   }
   
   const navigateToQuizz = (chapitreId: number) => {
-    router.push(`/chapitres/${chapitreId}/quizz`)
+    router.push(`/matieres/${matiereId}/chapitres/${chapitreId}/quizz`)
   }
   
   onMounted(async () => {

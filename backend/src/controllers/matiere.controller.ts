@@ -32,8 +32,16 @@ export class MatiereController {
 
     async createMatiere(request: Request, h: ResponseToolkit) {
         try {
-            const matiere = await this.matiereService.createMatiere(request.payload as any);
-            return h.response(matiere).code(201);
+            const matiere = request.payload as {
+                nom: string;
+                description?: string;
+            };
+
+            console.log(matiere);
+
+            const newMatiere = await this.matiereService.createMatiere(matiere);
+
+            return h.response(newMatiere).code(201);
         } catch (error) {
             return h.response({ error: 'Internal Server Error' }).code(500);
         }

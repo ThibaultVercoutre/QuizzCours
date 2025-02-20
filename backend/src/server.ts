@@ -1,6 +1,8 @@
 import Hapi from '@hapi/hapi';
 import { matiereRoutes } from './routes/matiere.route';
 import { chapitreRoutes } from './routes/chapitre.route';
+import { questionRoutes } from './routes/question.route';
+import { reponseRoutes } from './routes/reponse.route';
 import sequelize from './config/database';
 
 const init = async () => {
@@ -9,7 +11,9 @@ const init = async () => {
         host: 'localhost',
         routes: {
             cors: {
-                origin: ['http://localhost:3000']
+                origin: ['*'],
+                headers: ['Accept', 'Content-Type'],
+                additionalHeaders: ['X-Requested-With']
             }
         }
     });
@@ -28,6 +32,8 @@ const init = async () => {
     // Enregistrer les routes
     matiereRoutes(server);
     chapitreRoutes(server);
+    questionRoutes(server);
+    reponseRoutes(server);
 
     await server.start();
     console.log('Server running on %s', server.info.uri);
