@@ -40,11 +40,13 @@
   <script setup lang="ts">
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
+  import type { CreateMatiereDto } from '@/frontend/types/matiere'
+  import { matiereService } from '@/frontend/services/matiereService'
   
   const router = useRouter()
   
   const loading = ref(false)
-  const formState = ref({
+  const formState = ref<CreateMatiereDto>({
     nom: '',
     description: ''
   })
@@ -52,18 +54,7 @@
   const onSubmit = async () => {
     loading.value = true
     try {
-      const response = await fetch('http://localhost:3001/api/matieres', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formState.value)
-      })
-  
-      if (!response.ok) {
-        throw new Error('Erreur lors de la création de la matière')
-      }
-  
+      await matiereService.createMatiere(formState.value)
       router.push('/matieres')
     } catch (error) {
       console.error(error)

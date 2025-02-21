@@ -39,39 +39,29 @@
   
   <script setup lang="ts">
   import { ref } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
+  import type { CreateChapitreDto } from '../../../../../types/chapitre'
+  import { chapitreService } from '../../../../../services/chapitreService'
   
-  const router = useRouter()
   const route = useRoute()
-  const matiereId = route.params.id as string
+  const router = useRouter()
+  const matiereId = Number(route.params.id)
   
   const loading = ref(false)
-  const formState = ref({
+  const formState = ref<CreateChapitreDto>({
     titre: '',
-    description: ''
+    description: '',
+    matiereId: matiereId
   })
   
   const onSubmit = async () => {
     loading.value = true
     try {
-      const response = await fetch(`http://localhost:3001/api/chapitres`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formState.value,
-          matiere_id: parseInt(matiereId)
-        })
-      })
-  
-      if (!response.ok) {
-        throw new Error('Erreur lors de la création du chapitre')
-      }
-  
+      await chapitreService.createChapitre(formState.value)
       router.push(`/matieres/${matiereId}/chapitres`)
     } catch (error) {
       console.error(error)
+      alert(error instanceof Error ? error.message : 'Une erreur est survenue')
     } finally {
       loading.value = false
     }

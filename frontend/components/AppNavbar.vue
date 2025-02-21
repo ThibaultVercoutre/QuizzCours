@@ -1,3 +1,9 @@
+<script setup lang="ts" generic="T">
+  defineOptions({
+    name: 'AppNavbar'
+  })
+</script>
+
 <template>
     <UHeader class="border-b border-gray-200 dark:border-gray-800">
       <template #left>
@@ -19,4 +25,4 @@
         </UButton>
       </template>
     </UHeader>
-  </template>
+</template>

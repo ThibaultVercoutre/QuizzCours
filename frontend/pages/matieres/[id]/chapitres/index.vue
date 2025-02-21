@@ -61,17 +61,12 @@
 <script setup lang="ts">
   import { ref, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
+  import type { Chapitre } from '../../../../types/chapitre'
+  import { chapitreService } from '../../../../services/chapitreService'
   
   const router = useRouter()
   const route = useRoute()
-  const matiereId = route.params.id as string
-  
-  interface Chapitre {
-    id: number
-    titre: string
-    description: string
-    matiere_id: number
-  }
+  const matiereId = Number(route.params.id)
   
   interface Matiere {
     id: number
@@ -111,11 +106,7 @@
   const fetchChapitres = async () => {
     loading.value = true
     try {
-      const response = await fetch(`http://localhost:3001/api/matieres/${matiereId}/chapitres`)
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement des chapitres')
-      }
-      chapitres.value = await response.json()
+      chapitres.value = await chapitreService.getChapitresByMatiereId(matiereId)
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Erreur lors du chargement des chapitres"
     } finally {
@@ -133,12 +124,7 @@
   
   const handleDeleteChapitre = async (chapitre: Chapitre) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/chapitres/${chapitre.id}`, {
-        method: 'DELETE'
-      })
-      if (!response.ok) {
-        throw new Error('Erreur lors de la suppression')
-      }
+      await chapitreService.deleteChapitre(chapitre.id)
       await fetchChapitres()
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Erreur lors de la suppression"

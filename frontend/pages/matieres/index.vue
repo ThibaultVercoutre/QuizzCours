@@ -54,14 +54,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Matiere } from '../../types/matiere'
+import { matiereService } from '../../services/matiereService'
 
 const router = useRouter()
-
-interface Matiere {
-id: number
-nom: string
-description: string
-}
 
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -81,18 +77,14 @@ const getActionItems = (matiere: Matiere) => [
 ]
 
 const fetchMatieres = async () => {
-loading.value = true
-try {
-  const response = await fetch('http://localhost:3001/api/matieres')
-  if (!response.ok) {
-    throw new Error('Erreur lors du chargement des matières')
+  loading.value = true
+  try {
+    matieres.value = await matiereService.getAllMatieres()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : "Erreur lors du chargement des matières"
+  } finally {
+    loading.value = false
   }
-  matieres.value = await response.json()
-} catch (e) {
-  error.value = e instanceof Error ? e.message : "Erreur lors du chargement des matières"
-} finally {
-  loading.value = false
-}
 }
 
 const handleAddMatiere = () => {
@@ -105,12 +97,7 @@ const handleEditMatiere = (matiere: Matiere) => {
 
 const handleDeleteMatiere = async (matiere: Matiere) => {
   try {
-    const response = await fetch(`http://localhost:3001/api/matieres/${matiere.id}`, {
-      method: 'DELETE'
-    })
-    if (!response.ok) {
-      throw new Error('Erreur lors de la suppression')
-    }
+    await matiereService.deleteMatiere(matiere.id)
     await fetchMatieres()
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Erreur lors de la suppression"
