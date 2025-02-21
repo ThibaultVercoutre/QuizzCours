@@ -63,6 +63,7 @@
   import { useRouter, useRoute } from 'vue-router'
   import type { Chapitre } from '../../../../types/chapitre'
   import { chapitreService } from '../../../../services/chapitreService'
+  import { matiereService } from '../../../../services/matiereService'
   
   const router = useRouter()
   const route = useRoute()
@@ -93,11 +94,7 @@
   
   const fetchMatiere = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/matieres/${matiereId}`)
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement de la matière')
-      }
-      matiere.value = await response.json()
+      matiere.value = await matiereService.getMatiere(matiereId)
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Erreur lors du chargement de la matière"
     }

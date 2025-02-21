@@ -58,6 +58,14 @@ export class ChapitreService {
       throw new Error('Erreur lors de la suppression du chapitre')
     }
   }
+
+  async getChapitre(id: number): Promise<Chapitre> {
+    const response = await fetch(`${API_BASE_URL}/chapitres/${id}`)
+    if (!response.ok) {
+      throw new Error('Erreur lors du chargement du chapitre')
+    }
+    return response.json()
+  }
 }
 
 export const chapitreService = ChapitreService.getInstance() 

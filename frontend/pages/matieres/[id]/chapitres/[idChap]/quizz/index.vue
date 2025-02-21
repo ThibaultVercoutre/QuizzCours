@@ -96,6 +96,8 @@
   <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
+  import { chapitreService } from '../../../../../../services/chapitreService'
+  import { quizService } from '../../../../../../services/quizService'
   
   interface Reponse {
     id: number
@@ -117,7 +119,7 @@
   
   const router = useRouter()
   const route = useRoute()
-  const chapitreId = route.params.idChap as string
+  const chapitreId = Number(route.params.idChap)
   
   const loading = ref(true)
   const error = ref<string | null>(null)
@@ -152,9 +154,7 @@
   
   const fetchChapitre = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/chapitres/${chapitreId}`)
-      if (!response.ok) throw new Error('Erreur lors du chargement du chapitre')
-      chapitre.value = await response.json()
+      chapitre.value = await chapitreService.getChapitre(chapitreId)
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Erreur lors du chargement du chapitre"
     }
@@ -162,9 +162,8 @@
   
   const fetchQuestions = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/chapitres/${chapitreId}/questions`)
-      if (!response.ok) throw new Error('Erreur lors du chargement des questions')
-      questions.value = shuffleArray(await response.json())
+      const questionsData = await quizService.getQuestionsByChapitre(chapitreId)
+      questions.value = shuffleArray(questionsData)
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Erreur lors du chargement des questions"
     } finally {
