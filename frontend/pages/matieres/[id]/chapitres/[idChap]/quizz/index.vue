@@ -205,9 +205,6 @@
         pourcentage,
         chapitre_id: Number(route.params.idChap)
       })
-
-      // Rediriger vers la page des scores
-      router.push(`/matieres/${route.params.id}/chapitres/${route.params.idChap}/scores`)
     } catch (error) {
       console.error('Erreur lors de la sauvegarde du score:', error)
     }

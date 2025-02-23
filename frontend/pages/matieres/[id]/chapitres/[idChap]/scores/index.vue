@@ -48,12 +48,12 @@
               v-for="score in scores"
               :key="score.id"
               class="group relative flex-1 mx-1"
+              :style="{ height: `${score.pourcentage}%` }"
             >
               <div
                 class="w-full bg-primary transition-all duration-300 rounded-t"
-                :style="{ height: `${score.pourcentage}%` }"
+                :style="{ height: `100%` }"
               >
-                <UTooltip :text="`${score.pourcentage}%`" />
               </div>
             </div>
           </div>
@@ -85,12 +85,12 @@
             {
               key: 'pourcentage',
               label: 'Score',
-              formatter: (value) => `${value}%`
+              formatter: (value: number) => `${value}%`
             },
             {
               key: 'created_at',
               label: 'Date',
-              formatter: (value) => new Date(value).toLocaleDateString()
+              formatter: (value: string) => new Date(value).toLocaleDateString()
             }
           ]"
         >
@@ -131,7 +131,8 @@ const fetchScores = async () => {
       scoreService.getScoresByChapitreId(chapitreId),
       scoreService.getAverageScore(chapitreId)
     ])
-    scores.value = scoresData.reverse()
+    scoresData.reverse()
+    scores.value = scoresData
     averageScore.value = avgScore
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Erreur lors du chargement des données"
