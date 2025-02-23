@@ -1,5 +1,6 @@
-import { Table, Model, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Model, Column, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Matiere } from './Matiere';
+import { Score } from './Score';
 
 @Table({
     tableName: 'chapitres',
@@ -47,4 +48,7 @@ export class Chapitre extends Model {
         defaultValue: DataType.NOW
     })
     updated_at!: Date;
+
+    @HasMany(() => Score)
+    scores!: Score[];
 }

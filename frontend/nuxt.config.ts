@@ -1,10 +1,13 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config';
+
 export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
-  colorMode: {
-    preference: 'light'
+
+  app: {
+    head: {
+      title: 'QuizzCours'
+    }
   },
-  ui: {
-    global: true,
-  }
+
+  compatibilityDate: '2025-02-22'
 })

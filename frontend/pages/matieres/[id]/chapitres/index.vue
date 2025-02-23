@@ -42,7 +42,13 @@
                 color="primary"
                 @click="navigateToQuizz(chapitre.id)"
               >
-                Accéder au Quiz
+                Accéder au Quizz
+              </UButton>
+              <UButton
+                color="gray"
+                @click="navigateToScores(chapitre.id)"
+              >
+                Accéder aux scores
               </UButton>
               <UDropdown :items="getActionItems(chapitre)">
                 <UButton
@@ -130,6 +136,10 @@
   
   const navigateToQuizz = (chapitreId: number) => {
     router.push(`/matieres/${matiereId}/chapitres/${chapitreId}/quizz`)
+  }
+  
+  const navigateToScores = (chapitreId: number) => {
+    router.push(`/matieres/${matiereId}/chapitres/${chapitreId}/scores`)
   }
   
   onMounted(async () => {

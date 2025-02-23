@@ -3,6 +3,7 @@ import { matiereRoutes } from './routes/matiere.route';
 import { chapitreRoutes } from './routes/chapitre.route';
 import { questionRoutes } from './routes/question.route';
 import { reponseRoutes } from './routes/reponse.route';
+import { scoreRoutes } from './routes/score.route';
 import sequelize from './config/database';
 
 const init = async () => {
@@ -34,7 +35,8 @@ const init = async () => {
     chapitreRoutes(server);
     questionRoutes(server);
     reponseRoutes(server);
-
+    scoreRoutes(server);
+    
     await server.start();
     console.log('Server running on %s', server.info.uri);
 };

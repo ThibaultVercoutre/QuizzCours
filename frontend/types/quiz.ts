@@ -1,33 +1,33 @@
 export interface Question {
   id: number
-  titre: string
+  enonce: string
   chapitreId: number
   reponses: Reponse[]
 }
 
 export interface CreateQuestionDto {
-  titre: string
+  enonce: string
   chapitreId: number
 }
 
 export interface UpdateQuestionDto {
-  titre?: string
+  enonce?: string
 }
 
 export interface Reponse {
   id: number
-  contenu: string
-  estCorrecte: boolean
+  texte: string
+  est_correcte: boolean
   questionId: number
 }
 
 export interface CreateReponseDto {
-  contenu: string
-  estCorrecte: boolean
+  texte: string
+  est_correcte: boolean
   questionId: number
 }
 
 export interface UpdateReponseDto {
-  contenu?: string
-  estCorrecte?: boolean
+  texte?: string
+  est_correcte?: boolean
 } 

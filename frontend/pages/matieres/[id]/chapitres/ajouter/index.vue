@@ -18,6 +18,10 @@
           <UTextarea v-model="formState.description" />
         </UFormGroup>
   
+        <div v-if="error" class="mt-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          {{ error }}
+        </div>
+  
         <div class="flex justify-end gap-4 mt-4">
           <UButton
             variant="ghost"
@@ -38,7 +42,7 @@
   </template>
   
   <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, onBeforeUnmount } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import type { CreateChapitreDto } from '../../../../../types/chapitre'
   import { chapitreService } from '../../../../../services/chapitreService'
@@ -48,22 +52,57 @@
   const matiereId = Number(route.params.id)
   
   const loading = ref(false)
+  const error = ref<string>('')
+  
   const formState = ref<CreateChapitreDto>({
     titre: '',
     description: '',
-    matiereId: matiereId
+    matiere_id: matiereId
   })
   
   const onSubmit = async () => {
     loading.value = true
+    error.value = ''
+    
     try {
-      await chapitreService.createChapitre(formState.value)
+      if (!formState.value.titre.trim()) {
+        throw new Error('Le titre est obligatoire')
+      }
+      
+      // Vérification des données avant envoi
+      const chapitreData = {
+        titre: formState.value.titre,
+        description: formState.value.description,
+        matiere_id: Number(matiereId)
+      }
+      
+      const response = await chapitreService.createChapitre(chapitreData)
+      
       router.push(`/matieres/${matiereId}/chapitres`)
-    } catch (error) {
-      console.error(error)
-      alert(error instanceof Error ? error.message : 'Une erreur est survenue')
+    } catch (err) {
+      
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as any
+        if (axiosError.response?.status === 500) {
+          error.value = 'Une erreur est survenue sur le serveur. Veuillez réessayer plus tard.'
+        } else {
+          error.value = axiosError.response?.data?.message || 
+                       axiosError.response?.data?.error ||
+                       'Erreur lors de la communication avec le serveur'
+        }
+      } else if (err instanceof Error) {
+        error.value = err.message
+      } else {
+        error.value = 'Erreur lors de la création du chapitre. Veuillez réessayer.'
+      }
     } finally {
       loading.value = false
     }
   }
+  
+  // Nettoyer les références
+  onBeforeUnmount(() => {
+    formState.value = null
+    error.value = null
+  })
   </script>

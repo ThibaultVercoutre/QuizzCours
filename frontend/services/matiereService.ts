@@ -1,71 +1,73 @@
+import axios, { AxiosInstance } from 'axios'
 import type { Matiere, CreateMatiereDto, UpdateMatiereDto } from '../types/matiere'
 
-const API_BASE_URL = 'http://localhost:3001/api'
+class MatiereService {
+  private api: AxiosInstance
+  private controller: AbortController | null = null
 
-export class MatiereService {
-  private static instance: MatiereService
-  
-  private constructor() {}
-  
-  static getInstance(): MatiereService {
-    if (!MatiereService.instance) {
-      MatiereService.instance = new MatiereService()
+  constructor() {
+    this.api = axios.create({
+      baseURL: 'http://localhost:3001/api',
+      timeout: 10000
+    })
+  }
+
+  private abortPreviousRequest() {
+    if (this.controller) {
+      this.controller.abort()
     }
-    return MatiereService.instance
+    this.controller = new AbortController()
   }
 
   async getAllMatieres(): Promise<Matiere[]> {
-    const response = await fetch(`${API_BASE_URL}/matieres`)
-    if (!response.ok) {
+    this.abortPreviousRequest()
+    try {
+      const { data } = await this.api.get('/matieres', {
+        signal: this.controller.signal
+      })
+      return data
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return []
+      }
       throw new Error('Erreur lors du chargement des matières')
     }
-    return response.json()
   }
 
   async getMatiere(id: number): Promise<Matiere> {
-    const response = await fetch(`${API_BASE_URL}/matieres/${id}`)
-    if (!response.ok) {
+    try {
+      const { data } = await this.api.get(`/matieres/${id}`)
+      return data
+    } catch (error) {
       throw new Error('Erreur lors du chargement de la matière')
     }
-    return response.json()
   }
 
   async createMatiere(matiere: CreateMatiereDto): Promise<Matiere> {
-    const response = await fetch(`${API_BASE_URL}/matieres`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(matiere),
-    })
-    if (!response.ok) {
+    try {
+      const { data } = await this.api.post('/matieres', matiere)
+      return data
+    } catch (error) {
       throw new Error('Erreur lors de la création de la matière')
     }
-    return response.json()
   }
 
   async updateMatiere(id: number, matiere: UpdateMatiereDto): Promise<Matiere> {
-    const response = await fetch(`${API_BASE_URL}/matieres/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(matiere),
-    })
-    if (!response.ok) {
+    try {
+      const { data } = await this.api.put(`/matieres/${id}`, matiere)
+      return data
+    } catch (error) {
       throw new Error('Erreur lors de la mise à jour de la matière')
     }
-    return response.json()
   }
 
   async deleteMatiere(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/matieres/${id}`, {
-      method: 'DELETE',
-    })
-    if (!response.ok) {
+    try {
+      await this.api.delete(`/matieres/${id}`)
+    } catch (error) {
       throw new Error('Erreur lors de la suppression de la matière')
     }
   }
 }
 
-export const matiereService = MatiereService.getInstance() 
+export const matiereService = new MatiereService() 

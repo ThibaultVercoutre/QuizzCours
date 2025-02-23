@@ -2,13 +2,13 @@ export interface Chapitre {
   id: number
   titre: string
   description: string
-  matiereId: number
+  matiere_id: number
 }
 
 export interface CreateChapitreDto {
   titre: string
   description: string
-  matiereId: number
+  matiere_id: number
 }
 
 export interface UpdateChapitreDto {

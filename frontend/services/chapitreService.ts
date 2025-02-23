@@ -1,71 +1,73 @@
+import axios, { AxiosInstance } from 'axios'
 import type { Chapitre, CreateChapitreDto, UpdateChapitreDto } from '../types/chapitre'
 
-const API_BASE_URL = 'http://localhost:3001/api'
+class ChapitreService {
+  private api: AxiosInstance
+  private controller: AbortController | null = null
 
-export class ChapitreService {
-  private static instance: ChapitreService
-  
-  private constructor() {}
-  
-  static getInstance(): ChapitreService {
-    if (!ChapitreService.instance) {
-      ChapitreService.instance = new ChapitreService()
+  constructor() {
+    this.api = axios.create({
+      baseURL: 'http://localhost:3001/api',
+      timeout: 10000
+    })
+  }
+
+  private abortPreviousRequest() {
+    if (this.controller) {
+      this.controller.abort()
     }
-    return ChapitreService.instance
+    this.controller = new AbortController()
   }
 
   async getChapitresByMatiereId(matiereId: number): Promise<Chapitre[]> {
-    const response = await fetch(`${API_BASE_URL}/matieres/${matiereId}/chapitres`)
-    if (!response.ok) {
+    this.abortPreviousRequest()
+    try {
+      const { data } = await this.api.get(`/matieres/${matiereId}/chapitres`, {
+        signal: this.controller.signal
+      })
+      return data
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return []
+      }
       throw new Error('Erreur lors du chargement des chapitres')
     }
-    return response.json()
   }
 
   async createChapitre(chapitre: CreateChapitreDto): Promise<Chapitre> {
-    const response = await fetch(`${API_BASE_URL}/chapitres`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(chapitre),
-    })
-    if (!response.ok) {
+    try {
+      const { data } = await this.api.post('/chapitres', chapitre)
+      return data
+    } catch (error) {
       throw new Error('Erreur lors de la création du chapitre')
     }
-    return response.json()
   }
 
   async updateChapitre(id: number, chapitre: UpdateChapitreDto): Promise<Chapitre> {
-    const response = await fetch(`${API_BASE_URL}/chapitres/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(chapitre),
-    })
-    if (!response.ok) {
+    try {
+      const { data } = await this.api.put(`/chapitres/${id}`, chapitre)
+      return data
+    } catch (error) {
       throw new Error('Erreur lors de la mise à jour du chapitre')
     }
-    return response.json()
   }
 
   async deleteChapitre(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/chapitres/${id}`, {
-      method: 'DELETE',
-    })
-    if (!response.ok) {
+    try {
+      await this.api.delete(`/chapitres/${id}`)
+    } catch (error) {
       throw new Error('Erreur lors de la suppression du chapitre')
     }
   }
 
   async getChapitre(id: number): Promise<Chapitre> {
-    const response = await fetch(`${API_BASE_URL}/chapitres/${id}`)
-    if (!response.ok) {
+    try {
+      const { data } = await this.api.get(`/chapitres/${id}`)
+      return data
+    } catch (error) {
       throw new Error('Erreur lors du chargement du chapitre')
     }
-    return response.json()
   }
 }
 
-export const chapitreService = ChapitreService.getInstance() 
+export const chapitreService = new ChapitreService() 

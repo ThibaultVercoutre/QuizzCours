@@ -36,6 +36,7 @@ export class ChapitreController {
             const chapitre = await this.chapitreService.create(request.payload as any);
             return h.response(chapitre).code(201);
         } catch (error) {
+            console.error('Erreur lors de la création du chapitre:', error);
             return h.response({ error: 'Internal Server Error' }).code(500);
         }
     }

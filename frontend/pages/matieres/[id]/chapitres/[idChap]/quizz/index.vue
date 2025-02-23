@@ -98,19 +98,8 @@
   import { useRouter, useRoute } from 'vue-router'
   import { chapitreService } from '../../../../../../services/chapitreService'
   import { quizService } from '../../../../../../services/quizService'
-  
-  interface Reponse {
-    id: number
-    texte: string
-    est_correcte: boolean
-    question_id: number
-  }
-  
-  interface Question {
-    id: number
-    enonce: string
-    reponses: Reponse[]
-  }
+  import { scoreService } from '../../../../../../services/scoreService'
+  import type { Question, Reponse } from '../../../../../../types/quiz'
   
   interface Chapitre {
     id: number
@@ -189,6 +178,7 @@
   const nextQuestion = () => {
     if (isLastQuestion.value) {
       finished.value = true
+      handleQuizFinished(score.value)
     } else {
       currentQuestionIndex.value++
       answered.value = false
@@ -203,6 +193,24 @@
     selectedAnswer.value = null
     score.value = 0
     finished.value = false
+  }
+  
+  const handleQuizFinished = async (score: number) => {
+    try {
+      // Convertir le score en pourcentage
+      const pourcentage = Math.round((score / questions.value.length) * 100)
+      
+      // Sauvegarder le score
+      await scoreService.createScore({
+        pourcentage,
+        chapitre_id: Number(route.params.idChap)
+      })
+
+      // Rediriger vers la page des scores
+      router.push(`/matieres/${route.params.id}/chapitres/${route.params.idChap}/scores`)
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde du score:', error)
+    }
   }
   
   onMounted(async () => {
