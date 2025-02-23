@@ -4,6 +4,8 @@ import type { Chapitre, CreateChapitreDto, UpdateChapitreDto } from '../types/ch
 class ChapitreService {
   private api: AxiosInstance
   private controller: AbortController | null = null
+  private chapitreCache = new Map<number, { data: Chapitre; timestamp: number }>()
+  private cacheDuration = 5 * 60 * 1000 // 5 minutes
 
   constructor() {
     this.api = axios.create({
@@ -20,15 +22,20 @@ class ChapitreService {
   }
 
   async getChapitresByMatiereId(matiereId: number): Promise<Chapitre[]> {
-    this.abortPreviousRequest()
     try {
-      const { data } = await this.api.get(`/matieres/${matiereId}/chapitres`, {
-        signal: this.controller.signal
-      })
+      const { data } = await this.api.get(`/matieres/${matiereId}/chapitres`)
       return data
     } catch (error) {
-      if (axios.isCancel(error)) {
-        return []
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error('Matière non trouvée')
+        }
+        if (error.response?.status === 403) {
+          throw new Error('Accès non autorisé')
+        }
+        if (error.response?.status === 500) {
+          throw new Error('Erreur serveur, veuillez réessayer plus tard')
+        }
       }
       throw new Error('Erreur lors du chargement des chapitres')
     }
@@ -62,9 +69,30 @@ class ChapitreService {
 
   async getChapitre(id: number): Promise<Chapitre> {
     try {
+      // Vérifier le cache
+      const cached = this.chapitreCache.get(id)
+      if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
+        return cached.data
+      }
+
       const { data } = await this.api.get(`/chapitres/${id}`)
+      
+      // Mettre en cache
+      this.chapitreCache.set(id, {
+        data,
+        timestamp: Date.now()
+      })
+      
       return data
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error('Chapitre non trouvé')
+        }
+        if (error.response?.status === 500) {
+          throw new Error('Erreur serveur lors du chargement du chapitre')
+        }
+      }
       throw new Error('Erreur lors du chargement du chapitre')
     }
   }

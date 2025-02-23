@@ -4,6 +4,8 @@ import type { Matiere, CreateMatiereDto, UpdateMatiereDto } from '../types/matie
 class MatiereService {
   private api: AxiosInstance
   private controller: AbortController | null = null
+  private matiereCache = new Map<number, { data: Matiere; timestamp: number }>()
+  private cacheDuration = 5 * 60 * 1000 // 5 minutes
 
   constructor() {
     this.api = axios.create({
@@ -20,15 +22,17 @@ class MatiereService {
   }
 
   async getAllMatieres(): Promise<Matiere[]> {
-    this.abortPreviousRequest()
     try {
-      const { data } = await this.api.get('/matieres', {
-        signal: this.controller.signal
-      })
+      const { data } = await this.api.get('/matieres')
       return data
     } catch (error) {
-      if (axios.isCancel(error)) {
-        return []
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 403) {
+          throw new Error('Accès non autorisé')
+        }
+        if (error.response?.status === 500) {
+          throw new Error('Erreur serveur, veuillez réessayer plus tard')
+        }
       }
       throw new Error('Erreur lors du chargement des matières')
     }
@@ -36,9 +40,30 @@ class MatiereService {
 
   async getMatiere(id: number): Promise<Matiere> {
     try {
+      // Vérifier le cache
+      const cached = this.matiereCache.get(id)
+      if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
+        return cached.data
+      }
+
       const { data } = await this.api.get(`/matieres/${id}`)
+      
+      // Mettre en cache
+      this.matiereCache.set(id, {
+        data,
+        timestamp: Date.now()
+      })
+      
       return data
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error('Matière non trouvée')
+        }
+        if (error.response?.status === 500) {
+          throw new Error('Erreur serveur lors du chargement de la matière')
+        }
+      }
       throw new Error('Erreur lors du chargement de la matière')
     }
   }
