@@ -67,9 +67,9 @@
 <script setup lang="ts">
   import { ref, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
-  import type { Chapitre } from '../../../../types/chapitre'
-  import { chapitreService } from '../../../../services/chapitreService'
-  import { matiereService } from '../../../../services/matiereService'
+  import type { Chapitre } from '@/types/chapitre'
+  import { chapitreService } from '@/services/chapitreService'
+  import { matiereService } from '@/services/matiereService'
   
   const router = useRouter()
   const route = useRoute()
@@ -85,7 +85,7 @@
   const chapitres = ref<Chapitre[]>([])
   const matiere = ref<Matiere | null>(null)
   
-  const getActionItems = (chapitre: Chapitre) => [
+  const getActionItems = (chapitre: Chapitre) => [[
     {
       label: 'Modifier',
       icon: 'i-heroicons-pencil',
@@ -96,7 +96,7 @@
       icon: 'i-heroicons-trash',
       click: () => handleDeleteChapitre(chapitre)
     }
-  ]
+  ]]
   
   const fetchMatiere = async () => {
     try {

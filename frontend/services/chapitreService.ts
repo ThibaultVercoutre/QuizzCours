@@ -1,6 +1,6 @@
-import axios, { AxiosInstance } from 'axios'
-import type { Chapitre, CreateChapitreDto, UpdateChapitreDto } from '../types/chapitre'
-import { BaseService } from './baseService'
+import axios from 'axios'
+import type { Chapitre, CreateChapitreDto, UpdateChapitreDto } from '@/types/chapitre'
+import { BaseService } from '@/services/baseService'
 
 export class ChapitreService extends BaseService {
   private chapitreCache = new Map<number, { data: Chapitre; timestamp: number }>()
@@ -9,7 +9,7 @@ export class ChapitreService extends BaseService {
     super()
   }
 
-  protected abortPreviousRequest() {
+  protected override abortPreviousRequest() {
     if (this.controller) {
       this.controller.abort()
     }

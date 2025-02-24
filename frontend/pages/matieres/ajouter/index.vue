@@ -40,8 +40,8 @@
   <script setup lang="ts">
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import type { CreateMatiereDto } from '@/frontend/types/matiere'
-  import { matiereService } from '@/frontend/services/matiereService'
+  import type { CreateMatiereDto } from '@/types/matiere'
+  import { matiereService } from '@/services/matiereService'
   
   const router = useRouter()
   

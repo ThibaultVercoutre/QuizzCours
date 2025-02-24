@@ -1,6 +1,6 @@
-import axios, { AxiosInstance } from 'axios'
-import type { Score } from '../types/score'
-import { BaseService } from './baseService'
+import axios from 'axios'
+import type { Score } from '@/types/score'
+import { BaseService } from '@/services/baseService'
 
 export class ScoreService extends BaseService {
   async getScoresByChapitreId(chapitreId: number, page = 1, limit = 20): Promise<{ scores: Score[]; total: number }> {

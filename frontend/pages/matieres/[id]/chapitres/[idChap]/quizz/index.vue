@@ -96,10 +96,10 @@
   <script setup lang="ts">
   import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
-  import { chapitreService } from '../../../../../../services/chapitreService'
-  import { quizService } from '../../../../../../services/quizService'
-  import { scoreService } from '../../../../../../services/scoreService'
-  import type { Question, Reponse } from '../../../../../../types/quiz'
+  import { chapitreService } from '@/services/chapitreService'
+  import { quizService } from '@/services/quizService'
+  import { scoreService } from '@/services/scoreService'
+  import type { Question, Reponse } from '@/types/quiz'
   
   interface Chapitre {
     id: number
@@ -168,7 +168,7 @@
     }
   }
   
-  const getAnswerColor = (reponse: Reponse): string => {
+  const getAnswerColor = (reponse: Reponse): 'gray' | 'green' | 'red' => {
     if (!answered.value) return 'gray'
     if (reponse.est_correcte) return 'green'
     if (reponse === selectedAnswer.value) return 'red'

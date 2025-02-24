@@ -1,10 +1,11 @@
-import axios, { AxiosInstance } from 'axios'
-import type { Question, CreateQuestionDto, UpdateQuestionDto, Reponse, CreateReponseDto, UpdateReponseDto } from '../types/quiz'
-import { BaseService } from './baseService'
+import axios from 'axios'
+import type { AxiosInstance } from 'axios'
+import type { Question, CreateQuestionDto, UpdateQuestionDto, Reponse, CreateReponseDto, UpdateReponseDto } from '@/types/quiz'
+import { BaseService } from '@/services/baseService'
 
 export class QuizService extends BaseService {
-  protected api: AxiosInstance
-  protected controller: AbortController | null = null
+  protected override api: AxiosInstance
+  protected override controller: AbortController | null = null
   private loading: boolean = false
 
   constructor() {
@@ -15,7 +16,7 @@ export class QuizService extends BaseService {
     })
   }
 
-  protected abortPreviousRequest() {
+  protected override abortPreviousRequest() {
     if (this.controller) {
       this.controller.abort()
     }
@@ -38,7 +39,7 @@ export class QuizService extends BaseService {
 
     try {
       const { data } = await this.api.get(`/chapitres/${chapitreId}/questions`, {
-        signal: this.controller.signal
+        signal: this.controller!.signal
       })
       this.setCacheItem(cacheKey, data)
       return data

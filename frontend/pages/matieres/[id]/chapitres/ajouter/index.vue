@@ -44,8 +44,8 @@
   <script setup lang="ts">
   import { ref, onBeforeUnmount } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import type { CreateChapitreDto } from '../../../../../types/chapitre'
-  import { chapitreService } from '../../../../../services/chapitreService'
+  import type { CreateChapitreDto } from '@/types/chapitre'
+  import { chapitreService } from '@/services/chapitreService'
   
   const route = useRoute()
   const router = useRouter()
@@ -102,7 +102,11 @@
   
   // Nettoyer les références
   onBeforeUnmount(() => {
-    formState.value = null
-    error.value = null
+    formState.value = {
+      titre: '',
+      description: '',
+      matiere_id: matiereId
+    }
+    error.value = ''
   })
   </script>

@@ -112,8 +112,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import type { Score } from '../../../../../../types/score'
-import { scoreService } from '../../../../../../services/scoreService'
+import type { Score } from '@/types/score'
+import { scoreService } from '@/services/scoreService'
 
 const router = useRouter()
 const route = useRoute()
@@ -127,12 +127,11 @@ const averageScore = ref<number>(0)
 const fetchScores = async () => {
   loading.value = true
   try {
-    const [scoresData, avgScore] = await Promise.all([
+    const [{ scores: scoresData }, avgScore] = await Promise.all([
       scoreService.getScoresByChapitreId(chapitreId),
       scoreService.getAverageScore(chapitreId)
     ])
-    scoresData.reverse()
-    scores.value = scoresData
+    scores.value = [...scoresData].reverse()
     averageScore.value = avgScore
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Erreur lors du chargement des données"

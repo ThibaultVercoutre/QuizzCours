@@ -63,18 +63,18 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const matieres = ref<Matiere[]>([])
 
-const getActionItems = (matiere: Matiere) => [
-{
-  label: 'Modifier',
-  icon: 'i-heroicons-pencil',
-  click: () => handleEditMatiere(matiere)
-},
-{
-  label: 'Supprimer',
-  icon: 'i-heroicons-trash',
-  click: () => handleDeleteMatiere(matiere)
-}
-]
+const getActionItems = (matiere: Matiere) => [[
+  {
+    label: 'Modifier',
+    icon: 'i-heroicons-pencil',
+    click: () => handleEditMatiere(matiere)
+  },
+  {
+    label: 'Supprimer',
+    icon: 'i-heroicons-trash',
+    click: () => handleDeleteMatiere(matiere)
+  }
+]]
 
 const fetchMatieres = async () => {
   loading.value = true
