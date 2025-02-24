@@ -94,7 +94,7 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { chapitreService } from '../../../../../../services/chapitreService'
   import { quizService } from '../../../../../../services/quizService'
@@ -186,13 +186,18 @@
     }
   }
   
-  const restartQuiz = () => {
-    questions.value = shuffleArray(questions.value)
+  const cleanup = () => {
+    questions.value = []
     currentQuestionIndex.value = 0
     answered.value = false
     selectedAnswer.value = null
     score.value = 0
     finished.value = false
+  }
+  
+  const restartQuiz = () => {
+    cleanup()
+    questions.value = shuffleArray(questions.value)
   }
   
   const handleQuizFinished = async (score: number) => {
@@ -213,5 +218,10 @@
   onMounted(async () => {
     await fetchChapitre()
     await fetchQuestions()
+  })
+  
+  onBeforeUnmount(() => {
+    cleanup()
+    quizService.cleanupOnUnmount()
   })
   </script>

@@ -1,54 +1,23 @@
 import axios, { AxiosInstance } from 'axios'
 import type { Score } from '../types/score'
+import { BaseService } from './baseService'
 
-class ScoreService {
-  private api: AxiosInstance
-  private controller: AbortController | null = null
-  private scoreCache = new Map<number, { data: Score[]; timestamp: number }>()
-  private cacheDuration = 5 * 60 * 1000 // 5 minutes
+export class ScoreService extends BaseService {
+  async getScoresByChapitreId(chapitreId: number, page = 1, limit = 20): Promise<{ scores: Score[]; total: number }> {
+    const cacheKey = `scores_${chapitreId}_${page}_${limit}`
+    const cached = this.getCacheItem(cacheKey)
+    if (cached) return cached
 
-  constructor() {
-    this.api = axios.create({
-      baseURL: 'http://localhost:3001/api',
-      timeout: 10000
-    })
-  }
-
-  private abortPreviousRequest() {
-    if (this.controller) {
-      this.controller.abort()
-    }
-    this.controller = new AbortController()
-  }
-
-  async getScoresByChapitreId(chapitreId: number): Promise<Score[]> {
     try {
-      // Vérifier le cache
-      const cached = this.scoreCache.get(chapitreId)
-      if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
-        return cached.data
-      }
-
-      const { data } = await this.api.get(`/chapitres/${chapitreId}/scores`)
-      
-      // Mettre en cache
-      this.scoreCache.set(chapitreId, {
-        data,
-        timestamp: Date.now()
+      const { data } = await this.api.get(`/chapitres/${chapitreId}/scores`, {
+        params: { page, limit }
       })
-      
+      this.setCacheItem(cacheKey, data)
       return data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error('Chapitre non trouvé')
-        }
-        if (error.response?.status === 403) {
-          throw new Error('Accès non autorisé')
-        }
-        if (error.response?.status === 500) {
-          throw new Error('Erreur serveur, veuillez réessayer plus tard')
-        }
+        if (error.response?.status === 404) throw new Error('Chapitre non trouvé')
+        if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
       throw new Error('Erreur lors du chargement des scores')
     }
@@ -76,7 +45,8 @@ class ScoreService {
       const { data } = await this.api.post('/scores', score)
       
       // Invalider le cache pour ce chapitre
-      this.scoreCache.delete(score.chapitre_id)
+      const cacheKey = `scores_${score.chapitre_id}`
+      this.cache.delete(cacheKey)
       
       return data
     } catch (error) {

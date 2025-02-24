@@ -4,6 +4,8 @@
     "paths": {
       "@/*": ["./*"],
       "~/*": ["./*"]
-    }
+    },
+    "target": "es2015",
+    "moduleResolution": "node"
   }
 } 

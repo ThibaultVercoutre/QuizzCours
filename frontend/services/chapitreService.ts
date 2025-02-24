@@ -1,20 +1,15 @@
 import axios, { AxiosInstance } from 'axios'
 import type { Chapitre, CreateChapitreDto, UpdateChapitreDto } from '../types/chapitre'
+import { BaseService } from './baseService'
 
-class ChapitreService {
-  private api: AxiosInstance
-  private controller: AbortController | null = null
+export class ChapitreService extends BaseService {
   private chapitreCache = new Map<number, { data: Chapitre; timestamp: number }>()
-  private cacheDuration = 5 * 60 * 1000 // 5 minutes
 
   constructor() {
-    this.api = axios.create({
-      baseURL: 'http://localhost:3001/api',
-      timeout: 10000
-    })
+    super()
   }
 
-  private abortPreviousRequest() {
+  protected abortPreviousRequest() {
     if (this.controller) {
       this.controller.abort()
     }
@@ -22,20 +17,18 @@ class ChapitreService {
   }
 
   async getChapitresByMatiereId(matiereId: number): Promise<Chapitre[]> {
+    const cacheKey = `chapitres_matiere_${matiereId}`
+    const cached = this.getCacheItem(cacheKey)
+    if (cached) return cached
+
     try {
       const { data } = await this.api.get(`/matieres/${matiereId}/chapitres`)
+      this.setCacheItem(cacheKey, data)
       return data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error('Matière non trouvée')
-        }
-        if (error.response?.status === 403) {
-          throw new Error('Accès non autorisé')
-        }
-        if (error.response?.status === 500) {
-          throw new Error('Erreur serveur, veuillez réessayer plus tard')
-        }
+        if (error.response?.status === 404) throw new Error('Matière non trouvée')
+        if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
       throw new Error('Erreur lors du chargement des chapitres')
     }
@@ -68,30 +61,18 @@ class ChapitreService {
   }
 
   async getChapitre(id: number): Promise<Chapitre> {
-    try {
-      // Vérifier le cache
-      const cached = this.chapitreCache.get(id)
-      if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
-        return cached.data
-      }
+    const cacheKey = `chapitre_${id}`
+    const cached = this.getCacheItem(cacheKey)
+    if (cached) return cached
 
+    try {
       const { data } = await this.api.get(`/chapitres/${id}`)
-      
-      // Mettre en cache
-      this.chapitreCache.set(id, {
-        data,
-        timestamp: Date.now()
-      })
-      
+      this.setCacheItem(cacheKey, data)
       return data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error('Chapitre non trouvé')
-        }
-        if (error.response?.status === 500) {
-          throw new Error('Erreur serveur lors du chargement du chapitre')
-        }
+        if (error.response?.status === 404) throw new Error('Chapitre non trouvé')
+        if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
       throw new Error('Erreur lors du chargement du chapitre')
     }

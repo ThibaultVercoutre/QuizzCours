@@ -12,7 +12,29 @@ const sequelize = new Sequelize({
     port: Number(process.env.DB_PORT) || 3306,
     dialect: 'mysql',
     models: [path.join(__dirname, '..', 'models')], // chemin vers les modèles
-    logging: false // désactive les logs SQL en développement
+    logging: false, // désactive les logs SQL en développement
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+    },
+    define: {
+        timestamps: true,
+        underscored: true
+    }
+});
+
+// Gestion de la fermeture propre
+process.on('SIGINT', async () => {
+    try {
+        await sequelize.close();
+        console.log('Connection to database closed.');
+        process.exit(0);
+    } catch (error) {
+        console.error('Error closing database connection:', error);
+        process.exit(1);
+    }
 });
 
 export default sequelize;

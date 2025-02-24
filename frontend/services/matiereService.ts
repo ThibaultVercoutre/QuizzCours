@@ -1,20 +1,15 @@
 import axios, { AxiosInstance } from 'axios'
 import type { Matiere, CreateMatiereDto, UpdateMatiereDto } from '../types/matiere'
+import { BaseService } from './baseService'
 
-class MatiereService {
-  private api: AxiosInstance
-  private controller: AbortController | null = null
+export class MatiereService extends BaseService {
   private matiereCache = new Map<number, { data: Matiere; timestamp: number }>()
-  private cacheDuration = 5 * 60 * 1000 // 5 minutes
 
   constructor() {
-    this.api = axios.create({
-      baseURL: 'http://localhost:3001/api',
-      timeout: 10000
-    })
+    super()
   }
 
-  private abortPreviousRequest() {
+  protected abortPreviousRequest() {
     if (this.controller) {
       this.controller.abort()
     }
@@ -22,47 +17,35 @@ class MatiereService {
   }
 
   async getAllMatieres(): Promise<Matiere[]> {
+    const cacheKey = 'all_matieres'
+    const cached = this.getCacheItem(cacheKey)
+    if (cached) return cached
+
     try {
       const { data } = await this.api.get('/matieres')
+      this.setCacheItem(cacheKey, data)
       return data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 403) {
-          throw new Error('Accès non autorisé')
-        }
-        if (error.response?.status === 500) {
-          throw new Error('Erreur serveur, veuillez réessayer plus tard')
-        }
+        if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
       throw new Error('Erreur lors du chargement des matières')
     }
   }
 
   async getMatiere(id: number): Promise<Matiere> {
-    try {
-      // Vérifier le cache
-      const cached = this.matiereCache.get(id)
-      if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
-        return cached.data
-      }
+    const cacheKey = `matiere_${id}`
+    const cached = this.getCacheItem(cacheKey)
+    if (cached) return cached
 
+    try {
       const { data } = await this.api.get(`/matieres/${id}`)
-      
-      // Mettre en cache
-      this.matiereCache.set(id, {
-        data,
-        timestamp: Date.now()
-      })
-      
+      this.setCacheItem(cacheKey, data)
       return data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error('Matière non trouvée')
-        }
-        if (error.response?.status === 500) {
-          throw new Error('Erreur serveur lors du chargement de la matière')
-        }
+        if (error.response?.status === 404) throw new Error('Matière non trouvée')
+        if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
       throw new Error('Erreur lors du chargement de la matière')
     }

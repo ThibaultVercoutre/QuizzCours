@@ -1,5 +1,6 @@
 import { Score } from '../models/Score';
 import { Chapitre } from '../models/Chapitre';
+import sequelize from '../config/database';
 
 export interface CreateScoreDto {
     pourcentage: number;
@@ -35,11 +36,17 @@ export class ScoreService {
         });
     }
 
-    async findByChapitreId(chapitreId: number): Promise<Score[]> {
-        return await Score.findAll({
+    async findByChapitreId(chapitreId: number, page = 1, limit = 20): Promise<{ scores: Score[]; total: number }> {
+        const offset = (page - 1) * limit
+        
+        const { rows: scores, count: total } = await Score.findAndCountAll({
             where: { chapitre_id: chapitreId },
-            order: [['created_at', 'DESC']]
+            order: [['created_at', 'DESC']],
+            limit,
+            offset
         });
+
+        return { scores, total };
     }
 
     async getLatestScore(chapitreId: number): Promise<Score | null> {
@@ -50,14 +57,13 @@ export class ScoreService {
     }
 
     async getAverageScore(chapitreId: number): Promise<number> {
-        const scores = await Score.findAll({
+        const result = await Score.findOne({
             where: { chapitre_id: chapitreId },
-            attributes: ['pourcentage']
+            attributes: [
+                [sequelize.fn('AVG', sequelize.col('pourcentage')), 'average']
+            ]
         });
 
-        if (scores.length === 0) return 0;
-
-        const sum = scores.reduce((acc, score) => acc + score.pourcentage, 0);
-        return Math.round(sum / scores.length);
+        return Math.round(result?.getDataValue('average') || 0);
     }
 } 

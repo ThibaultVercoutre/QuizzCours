@@ -1,19 +1,21 @@
 import axios, { AxiosInstance } from 'axios'
 import type { Question, CreateQuestionDto, UpdateQuestionDto, Reponse, CreateReponseDto, UpdateReponseDto } from '../types/quiz'
+import { BaseService } from './baseService'
 
-class QuizService {
-  private api: AxiosInstance
-  private controller: AbortController | null = null
+export class QuizService extends BaseService {
+  protected api: AxiosInstance
+  protected controller: AbortController | null = null
   private loading: boolean = false
 
   constructor() {
+    super()
     this.api = axios.create({
       baseURL: 'http://localhost:3001/api',
       timeout: 10000
     })
   }
 
-  private abortPreviousRequest() {
+  protected abortPreviousRequest() {
     if (this.controller) {
       this.controller.abort()
     }
@@ -30,28 +32,40 @@ class QuizService {
 
   async getQuestionsByChapitre(chapitreId: number): Promise<Question[]> {
     this.abortPreviousRequest()
+    const cacheKey = `questions_chapitre_${chapitreId}`
+    const cached = this.getCacheItem(cacheKey)
+    if (cached) return cached
+
     try {
       const { data } = await this.api.get(`/chapitres/${chapitreId}/questions`, {
         signal: this.controller.signal
       })
+      this.setCacheItem(cacheKey, data)
       return data
     } catch (error) {
       if (axios.isCancel(error)) {
         return []
       }
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) throw new Error('Chapitre non trouvé')
+        if (error.response?.status === 500) throw new Error('Erreur serveur')
+      }
       throw new Error('Erreur lors du chargement des questions')
     }
   }
 
-  async createQuestion(question: CreateQuestionDto): Promise<Question> {
+  async createQuestion(chapitreId: number, questionData: any): Promise<Question> {
     try {
-      this.setLoading(true)
-      const { data } = await this.api.post('/questions', question)
+      const { data } = await this.api.post(`/chapitres/${chapitreId}/questions`, questionData)
+      // Invalider le cache des questions pour ce chapitre
+      this.cache.delete(`questions_chapitre_${chapitreId}`)
       return data
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) throw new Error('Données invalides')
+        if (error.response?.status === 500) throw new Error('Erreur serveur')
+      }
       throw new Error('Erreur lors de la création de la question')
-    } finally {
-      this.setLoading(false)
     }
   }
 
