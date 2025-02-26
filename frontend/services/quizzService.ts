@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios'
 import type { Question, CreateQuestionDto, UpdateQuestionDto, Reponse, CreateReponseDto, UpdateReponseDto } from '@/types/quiz'
 import { BaseService } from '@/services/baseService'
 
-export class QuizService extends BaseService {
+export class QuizzService extends BaseService {
   protected override api: AxiosInstance
   protected override controller: AbortController | null = null
   private loading: boolean = false
@@ -29,6 +29,15 @@ export class QuizService extends BaseService {
 
   private setLoading(value: boolean): void {
     this.loading = value
+  }
+
+  async getAllQuestions(): Promise<Question[]> {
+    try {
+      const { data } = await this.api.get('/questions')
+      return data
+    } catch (error) {
+      throw new Error('Erreur lors du chargement des questions')
+    }
   }
 
   async getQuestionsByChapitre(chapitreId: number): Promise<Question[]> {
@@ -135,4 +144,4 @@ export class QuizService extends BaseService {
   }
 }
 
-export const quizService = new QuizService() 
+export const quizzService = new QuizzService() 

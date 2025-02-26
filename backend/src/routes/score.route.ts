@@ -6,6 +6,11 @@ export const scoreRoutes = (server: Server) => {
 
     server.route([
         {
+            method: 'GET',
+            path: '/api/scores',
+            handler: (request, h) => controller.getAllScores(request, h)
+        },
+        {
             method: 'POST',
             path: '/api/scores',
             handler: (request, h) => controller.createScore(request, h)

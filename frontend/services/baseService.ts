@@ -7,6 +7,7 @@ export abstract class BaseService {
   protected cache: Map<string, { data: any; timestamp: number }>
   protected readonly cacheDuration = 5 * 60 * 1000 // 5 minutes
   protected readonly maxCacheSize = 100 // Limite de taille du cache
+  private cleanupInterval: NodeJS.Timeout | null = null
 
   constructor(baseURL: string = 'http://localhost:3001/api') {
     this.api = axios.create({
@@ -14,7 +15,10 @@ export abstract class BaseService {
       timeout: 10000
     })
     this.cache = new Map()
-    this.startCacheCleanup()
+    
+    if (typeof window !== 'undefined') {
+      this.startCacheCleanup()
+    }
   }
 
   protected abortPreviousRequest() {
@@ -26,11 +30,14 @@ export abstract class BaseService {
 
   public cleanupOnUnmount() {
     this.abortPreviousRequest()
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval)
+    }
     this.cache.clear()
   }
 
   private startCacheCleanup() {
-    setInterval(() => {
+    this.cleanupInterval = setInterval(() => {
       const now = Date.now()
       Array.from(this.cache).forEach(([key, value]) => {
         if (now - value.timestamp > this.cacheDuration) {

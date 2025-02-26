@@ -1,5 +1,6 @@
 import { Score } from '../models/Score';
 import { Chapitre } from '../models/Chapitre';
+import { Matiere } from '../models/Matiere';
 import sequelize from '../config/database';
 
 export interface CreateScoreDto {
@@ -8,6 +9,22 @@ export interface CreateScoreDto {
 }
 
 export class ScoreService {
+
+    async getAllScores(): Promise<Score[]> {
+        return await Score.findAll({
+            include: [{
+                model: Chapitre,
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                include: [{
+                    model: Matiere,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
+                }]
+            }],
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
+            order: [['created_at', 'DESC']]
+        });
+    }
+
     async create(scoreData: CreateScoreDto): Promise<Score> {
         try {
             // Vérifier que le pourcentage est valide
@@ -31,8 +48,13 @@ export class ScoreService {
             where: { id },
             include: [{
                 model: Chapitre,
-                attributes: ['titre']
-            }]
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                include: [{
+                    model: Matiere,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
+                }]
+            }],
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
         });
     }
 
@@ -41,6 +63,15 @@ export class ScoreService {
         
         const { rows: scores, count: total } = await Score.findAndCountAll({
             where: { chapitre_id: chapitreId },
+            include: [{
+                model: Chapitre,
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                include: [{
+                    model: Matiere,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
+                }]
+            }],
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
             order: [['created_at', 'DESC']],
             limit,
             offset
@@ -52,6 +83,15 @@ export class ScoreService {
     async getLatestScore(chapitreId: number): Promise<Score | null> {
         return await Score.findOne({
             where: { chapitre_id: chapitreId },
+            include: [{
+                model: Chapitre,
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                include: [{
+                    model: Matiere,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
+                }]
+            }],
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
             order: [['created_at', 'DESC']]
         });
     }

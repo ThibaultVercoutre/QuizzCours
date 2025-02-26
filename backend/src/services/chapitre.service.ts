@@ -13,13 +13,29 @@ export interface UpdateChapitreDto {
 }
 
 export class ChapitreService {
+
+    async getAll(): Promise<Chapitre[]> {
+        return await Chapitre.findAll({
+            include: [{
+                model: Matiere,
+                attributes: { exclude: ['createdAt', 'updatedAt'] }
+            }],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            }
+        });
+    }
+
     async findAll(matiereId: number): Promise<Chapitre[]> {
         return await Chapitre.findAll({
             where: { matiere_id: matiereId },
             include: [{
                 model: Matiere,
-                attributes: ['nom']
-            }]
+                attributes: { exclude: ['createdAt', 'updatedAt'] }
+            }],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            }
         });
     }
 
@@ -28,8 +44,11 @@ export class ChapitreService {
             where: { id },
             include: [{
                 model: Matiere,
-                attributes: ['nom']
-            }]
+                attributes: { exclude: ['createdAt', 'updatedAt'] }
+            }],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            }
         });
     }
 
@@ -73,8 +92,11 @@ export class ChapitreService {
             where: { matiere_id: matiereId },
             include: [{
                 model: Matiere,
-                attributes: ['nom']
+                attributes: { exclude: ['createdAt', 'updatedAt'] }
             }],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            },
             order: [['created_at', 'ASC']]
         });
     }

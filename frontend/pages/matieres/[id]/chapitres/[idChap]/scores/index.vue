@@ -10,7 +10,9 @@
     </div>
 
     <div v-if="loading" class="flex justify-center py-4">
-      <ULoadingIcon />
+      <div class="w-full max-w-md">
+        <UProgress animation="carousel" color="primary" class="w-full" />
+      </div>
     </div>
 
     <div v-else-if="error" class="text-red-500 py-4">
@@ -90,7 +92,7 @@
             {
               key: 'created_at',
               label: 'Date',
-              formatter: (value: string) => new Date(value).toLocaleDateString()
+              formatter: formatDate
             }
           ]"
         >
@@ -123,6 +125,17 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const scores = ref<Score[]>([])
 const averageScore = ref<number>(0)
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date)
+}
 
 const fetchScores = async () => {
   loading.value = true

@@ -8,6 +8,15 @@ export class ScoreController {
         this.scoreService = new ScoreService();
     }
 
+    async getAllScores(request: Request, h: ResponseToolkit) {
+        try {
+            const scores = await this.scoreService.getAllScores();
+            return h.response(scores).code(200);
+        } catch (error) {
+            return h.response({ error: 'Internal Server Error' }).code(500);
+        }
+    }
+
     async createScore(request: Request, h: ResponseToolkit) {
         try {
             const score = await this.scoreService.create(request.payload as any);

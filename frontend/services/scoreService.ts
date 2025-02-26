@@ -3,6 +3,16 @@ import type { Score } from '@/types/score'
 import { BaseService } from '@/services/baseService'
 
 export class ScoreService extends BaseService {
+
+  async getAllScores(): Promise<Score[]> {
+    try {
+      const { data } = await this.api.get('/scores')
+      return data
+    } catch (error) {
+      throw new Error('Erreur lors du chargement des scores')
+    }
+  }
+  
   async getScoresByChapitreId(chapitreId: number, page = 1, limit = 20): Promise<{ scores: Score[]; total: number }> {
     const cacheKey = `scores_${chapitreId}_${page}_${limit}`
     const cached = this.getCacheItem(cacheKey)

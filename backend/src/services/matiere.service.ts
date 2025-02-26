@@ -1,9 +1,15 @@
 import { Matiere } from '../models/Matiere';
+import { Chapitre } from '../models/Chapitre';
 
 export class MatiereService {
     async getAllMatieres(): Promise<Matiere[]> {
         try {
-            return await Matiere.findAll();
+            return await Matiere.findAll({
+                include: [Chapitre],
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                }
+            });
         } catch (error) {
             throw new Error(`Error fetching matieres: ${error}`);
         }
@@ -11,7 +17,12 @@ export class MatiereService {
 
     async getMatiereById(id: number): Promise<Matiere | null> {
         try {
-            return await Matiere.findByPk(id);
+            return await Matiere.findByPk(id, {
+                include: [Chapitre],
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                }
+            });
         } catch (error) {
             throw new Error(`Error fetching matiere: ${error}`);
         }

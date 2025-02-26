@@ -34,6 +34,15 @@ export class QuestionController {
         }
     }
 
+    async getAllQuestions(request: Request, h: ResponseToolkit) {
+        try {
+            const questions = await this.questionService.getAllQuestions();
+            return h.response(questions).code(200);
+        } catch (error) {
+            return h.response({ error: 'Internal Server Error' }).code(500);
+        }
+    }
+
     async createQuestion(request: Request, h: ResponseToolkit) {
         try {
             const chapitreId = request.params.chapitreId;

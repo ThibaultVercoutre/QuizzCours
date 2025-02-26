@@ -1,5 +1,7 @@
 import { Reponse } from '../models/Reponse';
 import { Question } from '../models/Question';
+import { Chapitre } from '../models/Chapitre';
+import { Matiere } from '../models/Matiere';
 
 export interface CreateReponseDto {
     texte: string;
@@ -18,8 +20,17 @@ export class ReponseService {
             where: { question_id: questionId },
             include: [{
                 model: Question,
-                attributes: ['enonce']
-            }]
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                include: [{
+                    model: Chapitre,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] },
+                    include: [{
+                        model: Matiere,
+                        attributes: { exclude: ['createdAt', 'updatedAt'] }
+                    }]
+                }]
+            }],
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
         });
     }
 
@@ -28,8 +39,17 @@ export class ReponseService {
             where: { id },
             include: [{
                 model: Question,
-                attributes: ['enonce']
-            }]
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                include: [{
+                    model: Chapitre,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] },
+                    include: [{
+                        model: Matiere,
+                        attributes: { exclude: ['createdAt', 'updatedAt'] }
+                    }]
+                }]
+            }],
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
         });
     }
 

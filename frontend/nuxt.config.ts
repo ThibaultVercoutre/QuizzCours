@@ -2,7 +2,13 @@ import { defineNuxtConfig } from 'nuxt/config';
 import { fileURLToPath } from 'url';
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui', '@nuxtjs/color-mode'],
+
+  colorMode: {
+    preference: 'system',
+    fallback: 'light',
+    classSuffix: '-mode'
+  },
 
   app: {
     head: {

@@ -7,6 +7,11 @@ export const questionRoutes = (server: Server) => {
     server.route([
         {
             method: 'GET',
+            path: '/api/questions',
+            handler: (request, h) => controller.getAllQuestions(request, h)
+        },
+        {
+            method: 'GET',
             path: '/api/chapitres/{chapitreId}/questions',
             handler: (request, h) => controller.getQuestions(request, h)
         },

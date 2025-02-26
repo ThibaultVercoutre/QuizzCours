@@ -21,7 +21,9 @@
   
       <!-- État de chargement -->
       <div v-if="loading" class="flex justify-center py-4">
-        <ULoadingIcon />
+        <div class="w-full max-w-md">
+          <UProgress animation="carousel" color="primary" class="w-full" />
+        </div>
       </div>
   
       <!-- Affichage des erreurs -->
@@ -97,7 +99,7 @@
   import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { chapitreService } from '@/services/chapitreService'
-  import { quizService } from '@/services/quizService'
+  import { quizzService } from '@/services/quizzService'
   import { scoreService } from '@/services/scoreService'
   import type { Question, Reponse } from '@/types/quiz'
   
@@ -151,7 +153,7 @@
   
   const fetchQuestions = async () => {
     try {
-      const questionsData = await quizService.getQuestionsByChapitre(chapitreId)
+      const questionsData = await quizzService.getQuestionsByChapitre(chapitreId)
       questions.value = shuffleArray(questionsData)
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Erreur lors du chargement des questions"
@@ -187,17 +189,19 @@
   }
   
   const cleanup = () => {
-    questions.value = []
     currentQuestionIndex.value = 0
     answered.value = false
     selectedAnswer.value = null
     score.value = 0
     finished.value = false
+    error.value = null
   }
   
   const restartQuiz = () => {
     cleanup()
-    questions.value = shuffleArray(questions.value)
+    finished.value = false
+    questions.value = shuffleArray([...questions.value])
+    loading.value = false
   }
   
   const handleQuizFinished = async (score: number) => {
@@ -222,6 +226,6 @@
   
   onBeforeUnmount(() => {
     cleanup()
-    quizService.cleanupOnUnmount()
+    quizzService.cleanupOnUnmount()
   })
   </script>

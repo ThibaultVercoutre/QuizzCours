@@ -1,6 +1,7 @@
 import { Question } from '../models/Question';
 import { Chapitre } from '../models/Chapitre';
 import { Reponse } from '../models/Reponse';
+import { Matiere } from '../models/Matiere';
 
 export interface CreateQuestionDto {
     enonce: string;
@@ -12,19 +13,45 @@ export interface UpdateQuestionDto {
 }
 
 export class QuestionService {
+
+    async getAllQuestions(): Promise<Question[]> {
+        return await Question.findAll({
+            include: [
+                {
+                    model: Chapitre,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] },
+                    include: [{
+                        model: Matiere,
+                        attributes: { exclude: ['createdAt', 'updatedAt'] }
+                    }]
+                },
+                {
+                    model: Reponse,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
+                }
+            ],
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
+        });
+    }
+
     async findAll(chapitreId: number): Promise<Question[]> {
         return await Question.findAll({
             where: { chapitre_id: chapitreId },
             include: [
                 {
                     model: Chapitre,
-                    attributes: ['titre']
+                    attributes: { exclude: ['createdAt', 'updatedAt'] },
+                    include: [{
+                        model: Matiere,
+                        attributes: { exclude: ['createdAt', 'updatedAt'] }
+                    }]
                 },
                 {
                     model: Reponse,
-                    attributes: ['id', 'texte', 'est_correcte']
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
                 }
-            ]
+            ],
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
         });
     }
 
@@ -34,13 +61,18 @@ export class QuestionService {
             include: [
                 {
                     model: Chapitre,
-                    attributes: ['titre']
+                    attributes: { exclude: ['createdAt', 'updatedAt'] },
+                    include: [{
+                        model: Matiere,
+                        attributes: { exclude: ['createdAt', 'updatedAt'] }
+                    }]
                 },
                 {
                     model: Reponse,
-                    attributes: ['id', 'texte', 'est_correcte']
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
                 }
-            ]
+            ],
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
         });
     }
 

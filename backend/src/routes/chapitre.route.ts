@@ -7,6 +7,11 @@ export const chapitreRoutes = (server: Server) => {
     server.route([
         {
             method: 'GET',
+            path: '/api/chapitres',
+            handler: (request, h) => controller.getAllChapitres(request, h)
+        },
+        {
+            method: 'GET',
             path: '/api/matieres/{matiereId}/chapitres',
             handler: (request, h) => controller.getChapitres(request, h)
         },

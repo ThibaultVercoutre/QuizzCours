@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { Matiere, CreateMatiereDto, UpdateMatiereDto } from '@/types/matiere'
 import { BaseService } from '@/services/baseService'
+import { handleApiError } from '../utils/errorHandler'
 
 export class MatiereService extends BaseService {
   private matiereCache = new Map<number, { data: Matiere; timestamp: number }>()
@@ -29,7 +30,7 @@ export class MatiereService extends BaseService {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
-      throw new Error('Erreur lors du chargement des matières')
+      throw new Error(handleApiError(error, 'Erreur lors du chargement des matières'))
     }
   }
 
@@ -47,7 +48,7 @@ export class MatiereService extends BaseService {
         if (error.response?.status === 404) throw new Error('Matière non trouvée')
         if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
-      throw new Error('Erreur lors du chargement de la matière')
+      throw new Error(handleApiError(error, 'Erreur lors du chargement de la matière'))
     }
   }
 

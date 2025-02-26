@@ -8,6 +8,15 @@ export class ChapitreController {
         this.chapitreService = new ChapitreService();
     }
 
+    async getAllChapitres(request: Request, h: ResponseToolkit) {
+        try {
+            const chapitres = await this.chapitreService.getAll();
+            return h.response(chapitres).code(200);
+        } catch (error) {
+            return h.response({ error: 'Internal Server Error' }).code(500);
+        }
+    }
+
     async getChapitres(request: Request, h: ResponseToolkit) {
         try {
             const matiereId = parseInt(request.params.matiereId);

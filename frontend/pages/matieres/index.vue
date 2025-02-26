@@ -1,7 +1,14 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold">Liste des matières</h2>
+      <div class="flex items-center gap-4">
+          <UButton
+            icon="i-heroicons-arrow-left"
+            variant="ghost"
+            @click="router.back()"
+          />
+          <h2 class="text-xl font-bold">Liste des matières</h2>
+      </div>
       <UButton
         icon="i-heroicons-plus"
         color="primary"
@@ -12,7 +19,9 @@
     </div>
 
     <div v-if="loading" class="flex justify-center py-4">
-      <ULoadingIcon />
+      <div class="w-full max-w-md">
+        <UProgress animation="carousel" color="primary" class="w-full" />
+      </div>
     </div>
     
     <div v-else-if="error" class="text-red-500 py-4">

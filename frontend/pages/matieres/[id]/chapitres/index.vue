@@ -19,7 +19,9 @@
       </div>
   
       <div v-if="loading" class="flex justify-center py-4">
-        <ULoadingIcon />
+        <div class="w-full max-w-md">
+          <UProgress animation="carousel" color="primary" class="w-full" />
+        </div>
       </div>
       
       <div v-else-if="error" class="text-red-500 py-4">

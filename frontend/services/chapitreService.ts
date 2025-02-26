@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { Chapitre, CreateChapitreDto, UpdateChapitreDto } from '@/types/chapitre'
 import { BaseService } from '@/services/baseService'
+import { handleApiError } from '../utils/errorHandler'
 
 export class ChapitreService extends BaseService {
   private chapitreCache = new Map<number, { data: Chapitre; timestamp: number }>()
@@ -30,7 +31,7 @@ export class ChapitreService extends BaseService {
         if (error.response?.status === 404) throw new Error('Matière non trouvée')
         if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
-      throw new Error('Erreur lors du chargement des chapitres')
+      throw new Error(handleApiError(error, 'Erreur lors du chargement des chapitres'))
     }
   }
 
@@ -39,7 +40,7 @@ export class ChapitreService extends BaseService {
       const { data } = await this.api.post('/chapitres', chapitre)
       return data
     } catch (error) {
-      throw new Error('Erreur lors de la création du chapitre')
+      throw new Error(handleApiError(error, 'Erreur lors de la création du chapitre'))
     }
   }
 
@@ -48,7 +49,7 @@ export class ChapitreService extends BaseService {
       const { data } = await this.api.put(`/chapitres/${id}`, chapitre)
       return data
     } catch (error) {
-      throw new Error('Erreur lors de la mise à jour du chapitre')
+      throw new Error(handleApiError(error, 'Erreur lors de la mise à jour du chapitre'))
     }
   }
 
@@ -56,7 +57,7 @@ export class ChapitreService extends BaseService {
     try {
       await this.api.delete(`/chapitres/${id}`)
     } catch (error) {
-      throw new Error('Erreur lors de la suppression du chapitre')
+      throw new Error(handleApiError(error, 'Erreur lors de la suppression du chapitre'))
     }
   }
 
@@ -74,7 +75,16 @@ export class ChapitreService extends BaseService {
         if (error.response?.status === 404) throw new Error('Chapitre non trouvé')
         if (error.response?.status === 500) throw new Error('Erreur serveur')
       }
-      throw new Error('Erreur lors du chargement du chapitre')
+      throw new Error(handleApiError(error, 'Erreur lors du chargement du chapitre'))
+    }
+  }
+
+  async getAllChapitres(): Promise<Chapitre[]> {
+    try {
+      const { data } = await this.api.get('/chapitres')
+      return data
+    } catch (error) {
+      throw new Error(handleApiError(error, 'Erreur lors du chargement des chapitres'))
     }
   }
 }
