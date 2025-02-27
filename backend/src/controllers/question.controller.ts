@@ -1,6 +1,7 @@
 import { Request, ResponseToolkit } from '@hapi/hapi';
 import { QuestionService } from '../services/question.service';
 import { ReponseService } from '../services/reponse.service';
+import { ErrorService } from '../services/error.service';
 
 export class QuestionController {
     private questionService: QuestionService;
@@ -14,23 +15,31 @@ export class QuestionController {
     async getQuestions(request: Request, h: ResponseToolkit) {
         try {
             const chapitreId = parseInt(request.params.chapitreId);
+            if (isNaN(chapitreId)) {
+                return ErrorService.handleValidationError(h, 'ID de chapitre invalide');
+            }
             const questions = await this.questionService.findAll(chapitreId);
             return h.response(questions).code(200);
         } catch (error) {
-            return h.response({ error: 'Internal Server Error' }).code(500);
+            ErrorService.logError('getQuestions', error, { chapitreId: request.params.chapitreId });
+            return ErrorService.handleServerError(h, error);
         }
     }
 
     async getQuestionById(request: Request, h: ResponseToolkit) {
         try {
             const id = parseInt(request.params.id);
+            if (isNaN(id)) {
+                return ErrorService.handleValidationError(h, 'ID invalide');
+            }
             const question = await this.questionService.findOne(id);
             if (!question) {
-                return h.response({ error: 'Question not found' }).code(404);
+                return ErrorService.handleNotFoundError(h, 'Question');
             }
             return h.response(question).code(200);
         } catch (error) {
-            return h.response({ error: 'Internal Server Error' }).code(500);
+            ErrorService.logError('getQuestionById', error, { id: request.params.id });
+            return ErrorService.handleServerError(h, error);
         }
     }
 
@@ -39,13 +48,18 @@ export class QuestionController {
             const questions = await this.questionService.getAllQuestions();
             return h.response(questions).code(200);
         } catch (error) {
-            return h.response({ error: 'Internal Server Error' }).code(500);
+            ErrorService.logError('getAllQuestions', error);
+            return ErrorService.handleServerError(h, error);
         }
     }
 
     async createQuestion(request: Request, h: ResponseToolkit) {
         try {
             const chapitreId = request.params.chapitreId;
+            if (!chapitreId || isNaN(parseInt(chapitreId))) {
+                return ErrorService.handleValidationError(h, 'ID de chapitre invalide');
+            }
+            
             const { question, reponses } = request.payload as {
                 question: {
                     enonce: string;
@@ -56,6 +70,14 @@ export class QuestionController {
                 }>;
             };
 
+            if (!question || !question.enonce) {
+                return ErrorService.handleValidationError(h, 'L\'énoncé de la question est requis');
+            }
+
+            if (!reponses || reponses.length === 0) {
+                return ErrorService.handleValidationError(h, 'Au moins une réponse est requise');
+            }
+
             const questionData = {
                 ...question,
                 chapitre_id: parseInt(chapitreId)
@@ -65,50 +87,61 @@ export class QuestionController {
             const createdQuestion = await this.questionService.create(questionData);
     
             // Créer les réponses associées
-            if (reponses && reponses.length > 0) {
-                const reponsesWithQuestionId = reponses.map(reponse => ({
-                    ...reponse,
-                    question_id: createdQuestion.id
-                }));
-    
-                // Vous devrez injecter ReponseService dans le constructeur
+            const reponsesWithQuestionId = reponses.map(reponse => ({
+                ...reponse,
+                question_id: createdQuestion.id
+            }));
 
-                for (const reponse of reponsesWithQuestionId) {
-                    console.log('reponse:', reponse);
-                    const response = await this.reponseService.create(reponse);
-                }
+            for (const reponse of reponsesWithQuestionId) {
+                await this.reponseService.create(reponse);
             }
     
             return h.response(createdQuestion).code(201);
         } catch (error) {
-            console.error('Erreur lors de la création de la question:', error);
-            return h.response({ error: 'Internal Server Error' }).code(500);
+            ErrorService.logError('createQuestion', error, { 
+                chapitreId: request.params.chapitreId,
+                payload: request.payload 
+            });
+            return ErrorService.handleServerError(h, error);
         }
     }
 
     async updateQuestion(request: Request, h: ResponseToolkit) {
         try {
             const id = parseInt(request.params.id);
+            if (isNaN(id)) {
+                return ErrorService.handleValidationError(h, 'ID invalide');
+            }
+            
             const question = await this.questionService.update(id, request.payload as any);
             if (!question) {
-                return h.response({ error: 'Question not found' }).code(404);
+                return ErrorService.handleNotFoundError(h, 'Question');
             }
             return h.response(question).code(200);
         } catch (error) {
-            return h.response({ error: 'Internal Server Error' }).code(500);
+            ErrorService.logError('updateQuestion', error, { 
+                id: request.params.id, 
+                payload: request.payload 
+            });
+            return ErrorService.handleServerError(h, error);
         }
     }
 
     async deleteQuestion(request: Request, h: ResponseToolkit) {
         try {
             const id = parseInt(request.params.id);
+            if (isNaN(id)) {
+                return ErrorService.handleValidationError(h, 'ID invalide');
+            }
+            
             const deleted = await this.questionService.delete(id);
             if (!deleted) {
-                return h.response({ error: 'Question not found' }).code(404);
+                return ErrorService.handleNotFoundError(h, 'Question');
             }
             return h.response().code(204);
         } catch (error) {
-            return h.response({ error: 'Internal Server Error' }).code(500);
+            ErrorService.logError('deleteQuestion', error, { id: request.params.id });
+            return ErrorService.handleServerError(h, error);
         }
     }
 }

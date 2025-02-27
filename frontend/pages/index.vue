@@ -122,50 +122,68 @@ import { chapitreService } from '@/services/chapitreService';
 import { matiereService } from '@/services/matiereService';
 import { quizzService } from '@/services/quizzService';
 import { scoreService } from '@/services/scoreService';
-// Données simulées pour la démo
+
+// Données pour les statistiques
 const matieresCount = ref(0);
 const chapitresCount = ref(0);
 const questionsCount = ref(0);
 const quizzCompletedCount = ref(0);
 const loading = ref(true);
+const error = ref<string | null>(null);
 
 // Définir le type pour accepter les objets de l'API
-const recentScores = ref<any[]>([]);
+interface ScoreItem {
+  matiere: string;
+  chapitre: string;
+  score: number;
+}
+
+const recentScores = ref<ScoreItem[]>([]);
 
 const fetchStats = async () => {
+  error.value = null;
+  loading.value = true;
+  
   try {
-    const matieres = await matiereService.getAllMatieres()
-    matieresCount.value = matieres.length
+    // Utiliser Promise.all pour paralléliser les requêtes API
+    const [matieres, chapitres, questions, scores] = await Promise.all([
+      matiereService.getAllMatieres(),
+      chapitreService.getAllChapitres(),
+      quizzService.getAllQuestions(),
+      scoreService.getAllScores()
+    ]);
     
-    const chapitres = await chapitreService.getAllChapitres()
-    chapitresCount.value = chapitres.length
-
-    const questions = await quizzService.getAllQuestions()
-    questionsCount.value = questions.length
-
-    const quizzCompleted = await scoreService.getAllScores()
-    quizzCompletedCount.value = quizzCompleted.length
+    matieresCount.value = matieres.length;
+    chapitresCount.value = chapitres.length;
+    questionsCount.value = questions.length;
+    quizzCompletedCount.value = scores.length;
 
     // Récupérer uniquement les 4 derniers scores
-    recentScores.value = quizzCompleted
+    recentScores.value = scores
       .slice(0, 4) // Prendre les 4 premiers éléments du tableau
       .map(score => ({
         matiere: score.chapitre.matiere.nom,
         chapitre: score.chapitre.titre,
         score: score.pourcentage
-      }))
+      }));
 
-    loading.value = false
-  } catch (error) {
-    console.error("Erreur lors de la récupération des statistiques:", error)
+  } catch (err) {
+    console.error("Erreur lors de la récupération des statistiques:", err);
+    error.value = "Impossible de charger les données. Veuillez réessayer plus tard.";
+  } finally {
+    loading.value = false;
   }
+};
 
-}
-
+// Utiliser useAsyncData pour le chargement initial
 onMounted(() => {
-  fetchStats()
-})
+  fetchStats();
+});
 
+// Fonction pour rafraîchir les données
+const refreshData = () => {
+  fetchStats();
+};
 
 const getScoreColor = (score: number): 'green' | 'yellow' | 'red' => {
   if (score >= 80) return 'green';

@@ -5,16 +5,32 @@ import { questionRoutes } from './routes/question.route';
 import { reponseRoutes } from './routes/reponse.route';
 import { scoreRoutes } from './routes/score.route';
 import sequelize from './config/database';
+import dotenv from 'dotenv';
+
+// Charger les variables d'environnement
+dotenv.config();
 
 const init = async () => {
     const server = Hapi.server({
-        port: 3001,
-        host: 'localhost',
+        port: process.env.PORT || 3001,
+        host: process.env.HOST || 'localhost',
         routes: {
             cors: {
                 origin: ['*'],
-                headers: ['Accept', 'Content-Type'],
-                additionalHeaders: ['X-Requested-With']
+                headers: ['Accept', 'Content-Type', 'Authorization'],
+                additionalHeaders: ['X-Requested-With'],
+                credentials: true
+            },
+            validate: {
+                failAction: async (request, h, err) => {
+                    if (process.env.NODE_ENV === 'production') {
+                        console.error('ValidationError:', err);
+                        throw new Error('Invalid request payload');
+                    } else {
+                        console.error(err);
+                        throw err;
+                    }
+                }
             }
         }
     });
@@ -23,7 +39,13 @@ const init = async () => {
     try {
         await sequelize.authenticate();
         console.log('Database connection established successfully.');
-        await sequelize.sync({ alter: true });
+        
+        // En production, ne pas utiliser { alter: true } pour éviter les modifications non intentionnelles
+        const syncOptions = process.env.NODE_ENV === 'production' 
+            ? {} 
+            : { alter: true };
+            
+        await sequelize.sync(syncOptions);
         console.log('Database synchronized successfully.');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
@@ -38,7 +60,7 @@ const init = async () => {
     scoreRoutes(server);
     
     await server.start();
-    console.log('Server running on %s', server.info.uri);
+    console.log(`Server running on ${server.info.uri} in ${process.env.NODE_ENV || 'development'} mode`);
 };
 
 process.on('unhandledRejection', (err) => {

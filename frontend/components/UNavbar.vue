@@ -19,14 +19,16 @@
           </ULink>
         </UHorizontalNavigation>
         
-        <UButton
-          color="gray"
-          variant="ghost"
-          icon="i-heroicons-moon"
-          :ui="{ rounded: 'rounded-full' }"
-          @click="toggleDark()"
-          aria-label="Changer le thème"
-        />
+        <UTooltip :text="themeTooltipText">
+          <UButton
+            color="gray"
+            variant="ghost"
+            :icon="themeIcon"
+            :ui="{ rounded: 'rounded-full' }"
+            @click="toggleDark()"
+            aria-label="Changer le thème"
+          />
+        </UTooltip>
       </div>
     </div>
   </UContainer>
@@ -34,6 +36,18 @@
 
 <script setup lang="ts">
 const colorMode = useColorMode();
+
+const themeIcon = computed(() => {
+  return colorMode.value === 'dark' 
+    ? 'i-heroicons-moon' 
+    : 'i-heroicons-sun';
+});
+
+const themeTooltipText = computed(() => {
+  return colorMode.value === 'dark' 
+    ? 'Passer au mode clair' 
+    : 'Passer au mode sombre';
+});
 
 function toggleDark() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';

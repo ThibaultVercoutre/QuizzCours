@@ -1,4 +1,4 @@
-import { Table, Model, Column, DataType, HasMany } from 'sequelize-typescript';
+import { Table, Model, Column, DataType, HasMany, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
 import { Chapitre } from './Chapitre';
 
 @Table({
@@ -16,13 +16,28 @@ export class Matiere extends Model {
 
     @Column({
         type: DataType.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Le nom ne peut pas être vide'
+            },
+            len: {
+                args: [2, 100],
+                msg: 'Le nom doit contenir entre 2 et 100 caractères'
+            }
+        }
     })
     nom!: string;
 
     @Column({
         type: DataType.TEXT,
-        allowNull: true
+        allowNull: true,
+        validate: {
+            len: {
+                args: [0, 1000],
+                msg: 'La description ne peut pas dépasser 1000 caractères'
+            }
+        }
     })
     description?: string;
 
@@ -40,4 +55,15 @@ export class Matiere extends Model {
 
     @HasMany(() => Chapitre)
     chapitres!: Chapitre[];
+
+    @BeforeCreate
+    @BeforeUpdate
+    static trimFields(instance: Matiere) {
+        if (instance.nom) {
+            instance.nom = instance.nom.trim();
+        }
+        if (instance.description) {
+            instance.description = instance.description.trim();
+        }
+    }
 }
