@@ -8,20 +8,28 @@ export default defineAppConfig({
     icons: {
       // Utiliser les icônes en mode inline pour éviter les requêtes HTTP
       dynamic: false,
-      // Utiliser le préfixe i- pour les icônes
+      // Utiliser le préfixe i- pour les icônes Boxicons
       aliases: {
-        'arrow-left': 'i-heroicons-arrow-left-20-solid',
-        'plus': 'i-heroicons-plus-20-solid',
-        'ellipsis-vertical': 'i-heroicons-ellipsis-vertical-20-solid',
-        'trash': 'i-heroicons-trash-20-solid',
-        'check': 'i-heroicons-check-20-solid',
-        'x-mark': 'i-heroicons-x-mark-20-solid',
-        'pencil': 'i-heroicons-pencil-20-solid',
-        'eye': 'i-heroicons-eye-20-solid',
-        'bell': 'i-heroicons-bell-20-solid',
-        'user': 'i-heroicons-user-20-solid',
-        'cog': 'i-heroicons-cog-6-tooth-20-solid',
-        'home': 'i-heroicons-home-20-solid'
+        // Remplacement par des icônes Boxicons
+        'arrow-left': 'i-bx-left-arrow-alt',
+        'plus': 'i-bx-plus',
+        'ellipsis-vertical': 'i-bx-dots-vertical',
+        'trash': 'i-bx-trash',
+        'check': 'i-bx-check',
+        'x-mark': 'i-bx-x',
+        'pencil': 'i-bx-edit',
+        'eye': 'i-bx-show',
+        'bell': 'i-bx-bell',
+        'user': 'i-bx-user',
+        'cog': 'i-bx-cog',
+        'home': 'i-bx-home',
+        // Icônes supplémentaires
+        'academic-cap': 'i-bx-book-bookmark',
+        'arrow-right-on-rectangle': 'i-bx-log-out',
+        'book-open': 'i-bx-book-open',
+        'information-circle': 'i-bx-info-circle',
+        'check-circle': 'i-bx-check-circle',
+        'envelope': 'i-bx-envelope'
       }
     },
     notifications: {

@@ -3,14 +3,14 @@
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
           <UButton
-            icon="i-heroicons-arrow-left"
+            icon="arrow-left"
             variant="ghost"
             @click="router.back()"
           />
           <h2 class="text-xl font-bold">{{ matiere?.nom }} - Chapitres</h2>
         </div>
         <UButton
-          icon="i-heroicons-plus"
+          icon="plus"
           color="primary"
           @click="handleAddChapitre"
         >
@@ -56,7 +56,7 @@
                 <UButton
                   color="gray"
                   variant="ghost"
-                  icon="i-heroicons-ellipsis-vertical"
+                  icon="ellipsis-vertical"
                 />
               </UDropdown>
             </div>
@@ -90,12 +90,12 @@
   const getActionItems = (chapitre: Chapitre) => [[
     {
       label: 'Modifier',
-      icon: 'i-heroicons-pencil',
+      icon: 'pencil',
       click: () => handleEditChapitre(chapitre)
     },
     {
       label: 'Supprimer',
-      icon: 'i-heroicons-trash',
+      icon: 'trash',
       click: () => handleDeleteChapitre(chapitre)
     }
   ]]

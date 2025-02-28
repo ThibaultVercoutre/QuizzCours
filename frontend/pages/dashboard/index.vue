@@ -6,10 +6,10 @@
         <template #header>
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <UIcon name="i-heroicons-academic-cap" class="text-primary text-2xl" />
+              <UIcon name="i-bx-book-bookmark" class="text-primary text-2xl" />
               <h1 class="text-2xl font-bold">Bienvenue sur QuizzCours</h1>
             </div>
-            <UButton color="red" variant="soft" icon="i-heroicons-arrow-right-on-rectangle" @click="handleLogout">
+            <UButton color="red" variant="soft" icon="i-bx-log-out" @click="handleLogout">
               Déconnexion
             </UButton>
           </div>
@@ -31,7 +31,7 @@
             <UButton
               to="/dashboard/matieres"
               color="primary"
-              icon="i-heroicons-book-open"
+              icon="i-bx-book-open"
             >
               Explorer les matières
             </UButton>
@@ -40,7 +40,7 @@
               to="/dashboard/about"
               color="gray"
               variant="soft"
-              icon="i-heroicons-information-circle"
+              icon="i-bx-info-circle"
             >
               En savoir plus
             </UButton>

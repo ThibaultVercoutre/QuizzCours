@@ -2,7 +2,7 @@
   <div class="container mx-auto p-4">
     <div class="flex items-center gap-4 mb-6">
       <UButton
-        icon="i-heroicons-arrow-left"
+        icon="arrow-left"
         variant="ghost"
         @click="router.back()"
       />
@@ -20,7 +20,7 @@
           <UButton
             size="sm"
             variant="ghost"
-            icon="i-heroicons-plus"
+            icon="plus"
             @click="addReponse"
           >
             Ajouter une réponse
@@ -41,7 +41,7 @@
               label="Correcte"
             />
             <UButton
-              icon="i-heroicons-trash"
+              icon="trash"
               color="red"
               variant="ghost"
               @click="removeReponse(index)"
