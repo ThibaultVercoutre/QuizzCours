@@ -38,5 +38,12 @@ export default defineNuxtConfig({
     }
   },
 
+  // Exposer les variables d'environnement au runtime
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL
+    }
+  },
+
   compatibilityDate: '2025-02-22'
 })

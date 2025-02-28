@@ -4,16 +4,12 @@ import type { Question, CreateQuestionDto, UpdateQuestionDto, Reponse, CreateRep
 import { BaseService } from '@/services/baseService'
 
 export class QuizzService extends BaseService {
-  protected override api: AxiosInstance
-  protected override controller: AbortController | null = null
+  protected declare api: AxiosInstance
+  protected declare controller: AbortController | null
   private loading: boolean = false
 
   constructor() {
     super()
-    this.api = axios.create({
-      baseURL: 'http://localhost:3001/api',
-      timeout: 10000
-    })
   }
 
   protected override abortPreviousRequest() {

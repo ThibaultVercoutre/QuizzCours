@@ -72,10 +72,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useRuntimeConfig } from 'nuxt/app'
 
 const router = useRouter()
 const route = useRoute()
 const chapitreId = route.params.idChap as string
+const config = useRuntimeConfig()
+const apiBaseUrl = config.public.apiBaseUrl
 
 interface Reponse {
   texte: string
@@ -110,7 +113,7 @@ const onSubmit = async () => {
       chapitre_id: parseInt(chapitreId)
     }
 
-    const response = await fetch(`http://localhost:3001/api/chapitres/${chapitreId}/questions`, {
+    const response = await fetch(`${apiBaseUrl}/chapitres/${chapitreId}/questions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

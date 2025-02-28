@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { AxiosInstance } from 'axios'
+import { useRuntimeConfig } from 'nuxt/app'
 
 export abstract class BaseService {
   protected api: AxiosInstance
@@ -9,9 +10,20 @@ export abstract class BaseService {
   protected readonly maxCacheSize = 100 // Limite de taille du cache
   private cleanupInterval: NodeJS.Timeout | null = null
 
-  constructor(baseURL: string = 'http://localhost:3001/api') {
+  constructor(baseURL?: string) {
+    // Utiliser la variable d'environnement ou l'URL par défaut
+    let apiUrl: string
+    
+    try {
+      const config = useRuntimeConfig()
+      apiUrl = baseURL || (config.public.apiBaseUrl as string) || 'https://api.quizzcours.web-gine.fr/api'
+    } catch (error) {
+      // Fallback si useRuntimeConfig n'est pas disponible (SSR ou autre contexte)
+      apiUrl = baseURL || 'https://api.quizzcours.web-gine.fr/api'
+    }
+    
     this.api = axios.create({
-      baseURL,
+      baseURL: apiUrl,
       timeout: 10000
     })
     this.cache = new Map()
