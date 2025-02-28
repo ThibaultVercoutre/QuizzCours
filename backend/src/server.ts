@@ -4,6 +4,9 @@ import { chapitreRoutes } from './routes/chapitre.route';
 import { questionRoutes } from './routes/question.route';
 import { reponseRoutes } from './routes/reponse.route';
 import { scoreRoutes } from './routes/score.route';
+import { authRoutes } from './routes/auth.route';
+import { userRoutes } from './routes/user.route';
+import { authPlugin } from './plugins/auth.plugin';
 import sequelize from './config/database';
 import dotenv from 'dotenv';
 
@@ -43,7 +46,12 @@ const init = async () => {
         // En production, ne pas utiliser { alter: true } pour éviter les modifications non intentionnelles
         const syncOptions = process.env.NODE_ENV === 'production' 
             ? {} 
-            : { alter: true };
+            : { 
+                alter: true,
+                // Désactiver temporairement les contraintes de clé étrangère pendant la synchronisation
+                // pour éviter les erreurs de dépendance circulaire
+                force: false
+            };
             
         await sequelize.sync(syncOptions);
         console.log('Database synchronized successfully.');
@@ -52,12 +60,18 @@ const init = async () => {
         process.exit(1);
     }
 
+    // Enregistrer le plugin d'authentification
+    await server.register(authPlugin);
+    console.log('Authentication plugin registered successfully.');
+
     // Enregistrer les routes
     matiereRoutes(server);
     chapitreRoutes(server);
     questionRoutes(server);
     reponseRoutes(server);
     scoreRoutes(server);
+    authRoutes(server);
+    userRoutes(server);
     
     await server.start();
     console.log(`Server running on ${server.info.uri} in ${process.env.NODE_ENV || 'development'} mode`);

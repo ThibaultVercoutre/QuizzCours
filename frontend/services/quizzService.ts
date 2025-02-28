@@ -142,6 +142,15 @@ export class QuizzService extends BaseService {
       throw new Error('Erreur lors de la suppression de la réponse')
     }
   }
+
+  async getQuestionsByUserId(userId: number): Promise<Question[]> {
+    try {
+      const { data } = await this.api.get(`/users/${userId}/questions`)
+      return data
+    } catch (error) {
+      throw new Error('Erreur lors du chargement des questions')
+    }
+  }
 }
 
 export const quizzService = new QuizzService() 

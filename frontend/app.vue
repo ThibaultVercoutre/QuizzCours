@@ -1,21 +1,10 @@
 <template>
-  <div class="flex flex-col min-h-screen">
-    <UNavbar />
-    <NuxtRouteAnnouncer />
-    <main class="flex-grow">
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </main>
-    <UFooter />
+  <div>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
-
-<script setup>
-// S'assurer que les composants sont correctement importés
-import UNavbar from '~/components/UNavbar.vue';
-import UFooter from '~/components/UFooter.vue';
-</script>
 
 <style>
 body {

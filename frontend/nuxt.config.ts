@@ -2,13 +2,14 @@ import { defineNuxtConfig } from 'nuxt/config';
 import { fileURLToPath } from 'url';
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxtjs/color-mode'],
+  modules: ['@nuxt/ui'],
 
-  colorMode: {
-    preference: 'system',
-    fallback: 'light',
-    classSuffix: '-mode'
-  },
+  // Commenté temporairement
+  // colorMode: {
+  //   preference: 'system',
+  //   fallback: 'light',
+  //   classSuffix: '-mode'
+  // },
 
   app: {
     head: {
@@ -22,6 +23,11 @@ export default defineNuxtConfig({
   },
 
   srcDir: '.',
+  
+  // Spécifier le dossier des layouts
+  dir: {
+    layouts: 'layout'
+  },
 
   vite: {
     resolve: {

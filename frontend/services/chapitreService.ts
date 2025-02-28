@@ -17,9 +17,11 @@ export class ChapitreService extends BaseService {
     this.controller = new AbortController()
   }
 
-  async getChapitresByMatiereId(matiereId: number): Promise<Chapitre[]> {
+  async getChapitresByMatiereId(matiereId: number, forceRefresh: boolean = false): Promise<Chapitre[]> {
     const cacheKey = `chapitres_matiere_${matiereId}`
-    const cached = this.getCacheItem(cacheKey)
+    
+    // Si forceRefresh est true, on ignore le cache
+    const cached = forceRefresh ? null : this.getCacheItem(cacheKey)
     if (cached) return cached
 
     try {
@@ -38,6 +40,11 @@ export class ChapitreService extends BaseService {
   async createChapitre(chapitre: CreateChapitreDto): Promise<Chapitre> {
     try {
       const { data } = await this.api.post('/chapitres', chapitre)
+      
+      // Invalider le cache pour forcer un rechargement des chapitres de cette matière
+      const cacheKey = `chapitres_matiere_${chapitre.matiere_id}`
+      this.cache.delete(cacheKey)
+      
       return data
     } catch (error) {
       throw new Error(handleApiError(error, 'Erreur lors de la création du chapitre'))
@@ -82,6 +89,15 @@ export class ChapitreService extends BaseService {
   async getAllChapitres(): Promise<Chapitre[]> {
     try {
       const { data } = await this.api.get('/chapitres')
+      return data
+    } catch (error) {
+      throw new Error(handleApiError(error, 'Erreur lors du chargement des chapitres'))
+    }
+  }
+
+  async getChapitresByUserId(userId: number): Promise<Chapitre[]> {
+    try {
+      const { data } = await this.api.get(`/users/${userId}/chapitres`)
       return data
     } catch (error) {
       throw new Error(handleApiError(error, 'Erreur lors du chargement des chapitres'))

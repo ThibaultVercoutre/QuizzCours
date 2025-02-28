@@ -1,5 +1,7 @@
-import { Table, Model, Column, DataType, HasMany, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
+import { Table, Model, Column, DataType, HasMany, BelongsToMany, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
 import { Chapitre } from './Chapitre';
+import { User } from './User';
+import { UserMatiere } from './UserMatiere';
 
 @Table({
     tableName: 'matieres',
@@ -55,6 +57,9 @@ export class Matiere extends Model {
 
     @HasMany(() => Chapitre)
     chapitres!: Chapitre[];
+
+    @BelongsToMany(() => User, () => UserMatiere)
+    users!: User[];
 
     @BeforeCreate
     @BeforeUpdate

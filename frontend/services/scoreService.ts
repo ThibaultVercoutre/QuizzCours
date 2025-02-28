@@ -74,6 +74,15 @@ export class ScoreService extends BaseService {
       throw new Error('Erreur lors de la sauvegarde du score')
     }
   }
+
+  async getScoresByUserId(userId: number): Promise<Score[]> {
+    try {
+      const { data } = await this.api.get(`/users/${userId}/scores`)
+      return data
+    } catch (error) {
+      throw new Error('Erreur lors du chargement des scores')
+    }
+  }
 }
 
 export const scoreService = new ScoreService() 

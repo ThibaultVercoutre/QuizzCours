@@ -1,5 +1,6 @@
 import { Table, Model, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Chapitre } from './Chapitre';
+import { User } from './User';
 
 @Table({
     tableName: 'scores',
@@ -33,6 +34,16 @@ export class Score extends Model {
 
     @BelongsTo(() => Chapitre)
     chapitre!: Chapitre;
+
+    @ForeignKey(() => User)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true
+    })
+    user_id!: number;
+
+    @BelongsTo(() => User)
+    user!: User;
 
     @Column({
         type: DataType.DATE,
