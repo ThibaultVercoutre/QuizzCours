@@ -10,7 +10,7 @@ const sequelize = new Sequelize({
     password: process.env.DB_PASSWORD || '',
     host: process.env.DB_HOST || '127.0.0.1',
     port: Number(process.env.DB_PORT) || 3307,
-    dialect: 'mysql',
+    dialect: Number(process.env.DB_PORT) == 3307 ? 'mariadb' : 'mysql',
     models: [path.join(__dirname, '..', 'models')], // chemin vers les modèles
     logging: false, // désactive les logs SQL en développement
     pool: {
