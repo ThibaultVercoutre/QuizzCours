@@ -72,22 +72,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useRuntimeConfig } from 'nuxt/app'
+import { quizzService } from '@/services/quizzService'
 
 const router = useRouter()
 const route = useRoute()
 const chapitreId = route.params.idChap as string
-const config = useRuntimeConfig()
-const apiBaseUrl = config.public.apiBaseUrl
 
 interface Reponse {
   texte: string
   est_correcte: boolean
-}
-
-interface QuestionPayload {
-  enonce: string
-  chapitre_id: number
 }
 
 const loading = ref(false)
@@ -107,30 +100,20 @@ const removeReponse = (index: number) => {
 const onSubmit = async () => {
   loading.value = true
   try {
-    // Créer d'abord la question
-    const questionPayload = {
-      enonce: formState.value.enonce,
-      chapitre_id: parseInt(chapitreId)
-    }
-
-    const response = await fetch(`${apiBaseUrl}/chapitres/${chapitreId}/questions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    // Préparer les données pour le service
+    const questionData = {
+      question: {
+        enonce: formState.value.enonce,
+        chapitre_id: parseInt(chapitreId)
       },
-      body: JSON.stringify({
-        question: questionPayload,
-        reponses: formState.value.reponses.map(reponse => ({
-          texte: reponse.texte,
-          est_correcte: reponse.est_correcte
-        }))
-      })
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Erreur lors de l\'ajout de la question')
+      reponses: formState.value.reponses.map(reponse => ({
+        texte: reponse.texte,
+        est_correcte: reponse.est_correcte
+      }))
     }
+
+    // Utiliser le service pour créer la question
+    await quizzService.createQuestion(parseInt(chapitreId), questionData)
 
     // Si tout s'est bien passé, rediriger
     router.back()
