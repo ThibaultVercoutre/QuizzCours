@@ -4,6 +4,11 @@ import { fileURLToPath } from 'url';
 export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
 
+  // @ts-ignore - La propriété ui est fournie par @nuxt/ui
+  ui: {
+    icons: ['heroicons']
+  },
+
   // Commenté temporairement
   // colorMode: {
   //   preference: 'system',
