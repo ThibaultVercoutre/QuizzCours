@@ -3,14 +3,14 @@
     <div class="flex justify-between items-center mb-6">
       <div class="flex items-center gap-4">
           <UButton
-            icon="arrow-left"
+            icon="i-heroicons-arrow-left-20-solid"
             variant="ghost"
             @click="router.back()"
           />
           <h2 class="text-xl font-bold">Liste des matières</h2>
       </div>
       <UButton
-        icon="plus"
+        icon="i-heroicons-plus-20-solid"
         color="primary"
         @click="handleAddMatiere"
       >
@@ -50,7 +50,7 @@
               <UButton
                 color="gray"
                 variant="ghost"
-                icon="ellipsis-vertical"
+                icon="i-heroicons-ellipsis-vertical-20-solid"
               />
             </UDropdown>
           </div>
@@ -76,12 +76,12 @@ const matieres = ref<Matiere[]>([])
 const getActionItems = (matiere: Matiere) => [[
   {
     label: 'Modifier',
-    icon: 'i-heroicons-pencil',
+    icon: 'i-heroicons-pencil-20-solid',
     click: () => handleEditMatiere(matiere)
   },
   {
     label: 'Supprimer',
-    icon: 'i-heroicons-trash',
+    icon: 'i-heroicons-trash-20-solid',
     click: () => handleDeleteMatiere(matiere)
   }
 ]]

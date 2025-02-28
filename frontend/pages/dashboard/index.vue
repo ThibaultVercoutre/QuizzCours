@@ -6,10 +6,10 @@
         <template #header>
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <UIcon name="i-bx-book-bookmark" class="text-primary text-2xl" />
+              <UIcon name="i-heroicons-academic-cap-20-solid" class="text-primary text-2xl" />
               <h1 class="text-2xl font-bold">Bienvenue sur QuizzCours</h1>
             </div>
-            <UButton color="red" variant="soft" icon="i-bx-log-out" @click="handleLogout">
+            <UButton color="red" variant="soft" icon="i-heroicons-arrow-right-on-rectangle-20-solid" @click="handleLogout">
               Déconnexion
             </UButton>
           </div>
@@ -31,7 +31,7 @@
             <UButton
               to="/dashboard/matieres"
               color="primary"
-              icon="i-bx-book-open"
+              icon="i-heroicons-book-open-20-solid"
             >
               Explorer les matières
             </UButton>
@@ -40,7 +40,7 @@
               to="/dashboard/about"
               color="gray"
               variant="soft"
-              icon="i-bx-info-circle"
+              icon="i-heroicons-information-circle-20-solid"
             >
               En savoir plus
             </UButton>
@@ -52,7 +52,7 @@
       <UCard>
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-chart-bar" class="text-primary" />
+            <UIcon name="i-heroicons-chart-bar-20-solid" class="text-primary" />
             <h2 class="text-xl font-semibold">Statistiques</h2>
           </div>
         </template>
@@ -96,7 +96,7 @@
       <UCard>
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-clock" class="text-primary" />
+            <UIcon name="i-heroicons-clock-20-solid" class="text-primary" />
             <h2 class="text-xl font-semibold">Derniers quiz</h2>
           </div>
         </template>

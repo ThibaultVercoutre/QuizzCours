@@ -11,7 +11,7 @@
             <UButton
               variant="ghost"
               color="gray"
-              icon="information-circle"
+              icon="i-heroicons-information-circle-20-solid"
               to="/dashboard/about"
               size="sm"
             >
@@ -20,7 +20,7 @@
             <UButton
               variant="ghost"
               color="gray"
-              icon="i-bx-envelope"
+              icon="i-heroicons-envelope-20-solid"
               to="/dashboard/contact"
               size="sm"
             >
@@ -30,4 +30,8 @@
         </div>
       </div>
     </footer>
-</template> 
+</template>
+
+<script setup lang="ts">
+
+</script> 
