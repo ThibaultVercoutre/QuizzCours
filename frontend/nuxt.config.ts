@@ -6,7 +6,22 @@ export default defineNuxtConfig({
 
   // @ts-ignore - La propriété ui est fournie par @nuxt/ui
   ui: {
-    icons: ['heroicons']
+    icons: {
+      collections: {
+        heroicons: {
+          // Précharger explicitement les icônes utilisées
+          icons: [
+            'academic-cap-20-solid',
+            'arrow-right-on-rectangle-20-solid',
+            'book-open-20-solid',
+            'chart-bar-20-solid',
+            'clock-20-solid',
+            'envelope-20-solid',
+            'information-circle-20-solid'
+          ]
+        }
+      }
+    }
   },
 
   // Commenté temporairement

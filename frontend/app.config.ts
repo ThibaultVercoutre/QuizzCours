@@ -8,6 +8,10 @@ export default defineAppConfig({
     notifications: {
       position: 'top-right',
       duration: 3000
+    },
+    icons: {
+      // S'assurer que les icônes sont correctement chargées
+      dynamic: true
     }
   }
 }) 
